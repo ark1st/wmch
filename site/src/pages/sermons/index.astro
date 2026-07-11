@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { church } from '../../data/church';
+
+const sermons = (await getCollection('sermons')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const fmt = (d: Date) =>
+  d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+<Base title={`말씀 아카이브 · ${church.name}`}>
+  <main class="page" style="background: var(--paper)">
+    <div class="wrap">
+      <h1>생명의 말씀</h1>
+      <p class="desc">주일 설교 전체 목록입니다. 제목을 누르면 유튜브에서 볼 수 있습니다.</p>
+      {sermons.map((s) => (
+        <a class="list-item" href={s.data.youtube ?? church.youtube} target="_blank" rel="noopener">
+          <span class="d">{fmt(s.data.date)}</span>
+          <span class="t">{s.data.title}</span>
+          <span class="r">{s.data.scripture}</span>
+        </a>
+      ))}
+    </div>
+  </main>
+</Base>

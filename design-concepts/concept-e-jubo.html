@@ -1,0 +1,373 @@
+<title>시안 D — 주보 · 안양세계선교교회</title>
+<style>
+  :root {
+    --paper: #F7F5EF;
+    --ink: #1B1B19;
+    --gray: #6D6A62;
+    --line: #D9D5C9;
+    --line-dark: #1B1B19;
+    --seal: #B23A22;
+    --myeongjo: "Nanum Myeongjo", "AppleMyungjo", "Noto Serif KR", serif;
+    --gothic: "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--gothic); line-height: 1.7; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── 상단 정보줄 ── */
+  .topline { border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--gray); }
+  .topline-inner { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; }
+  .topline a { text-decoration: underline; text-underline-offset: 3px; }
+  .topline a:hover { color: var(--ink); }
+
+  /* ── 제호 ── */
+  .mast { text-align: center; padding: 44px 0 36px; border-bottom: 2.5px solid var(--line-dark); position: relative; }
+  .mast .weekly { font-family: var(--myeongjo); font-size: 13px; letter-spacing: 0.9em; margin-left: 0.9em; color: var(--gray); }
+  .mast h1 {
+    font-family: var(--myeongjo); font-weight: 800; margin: 10px 0 12px;
+    font-size: clamp(34px, 6vw, 62px); letter-spacing: 0.14em; margin-left: 0.14em; line-height: 1.2;
+  }
+  .mast .issue { font-size: 13px; color: var(--gray); display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
+  .seal {
+    position: absolute; right: 24px; bottom: 30px; width: 46px; height: 46px;
+    background: var(--seal); color: #F7F5EF; font-family: var(--myeongjo); font-weight: 800;
+    font-size: 15px; line-height: 1.15; display: grid; place-items: center; text-align: center;
+    letter-spacing: 0.06em; border-radius: 3px; rotate: -3deg;
+  }
+  @media (max-width: 640px) { .seal { display: none; } }
+
+  /* ── 내비: 신문 섹션줄 ── */
+  .navline { border-bottom: 1px solid var(--line-dark); position: sticky; top: 0; background: var(--paper); z-index: 50; }
+  .navline-inner { display: flex; justify-content: center; gap: 0; flex-wrap: wrap; }
+  .navline a {
+    padding: 13px 26px; font-size: 15px; font-weight: 700; letter-spacing: 0.02em;
+    border-left: 1px solid var(--line);
+  }
+  .navline a:last-child { border-right: 1px solid var(--line); }
+  .navline a:hover { background: var(--ink); color: var(--paper); }
+  .navline a:focus-visible { outline: 2px solid var(--seal); outline-offset: -2px; }
+  @media (max-width: 720px) { .navline a { padding: 12px 14px; font-size: 13.5px; } }
+
+  /* ── 1면: 이번 주 말씀 ── */
+  .lead { display: grid; grid-template-columns: 1fr 320px; }
+  @media (max-width: 880px) { .lead { grid-template-columns: 1fr; } }
+  .lead-main { padding: 56px 48px 64px 0; }
+  @media (max-width: 880px) { .lead-main { padding: 44px 0; } }
+  .kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+  .kicker .box {
+    border: 1.5px solid var(--ink); padding: 5px 12px; font-size: 12.5px; font-weight: 800; letter-spacing: 0.24em; margin-right: -0.24em;
+  }
+  .kicker .date { font-size: 13px; color: var(--gray); }
+  .lead-main h2 {
+    font-family: var(--myeongjo); font-weight: 800; margin: 0 0 18px;
+    font-size: clamp(34px, 5.4vw, 58px); line-height: 1.34; letter-spacing: -0.005em; text-wrap: balance;
+  }
+  .lead-main .ref { font-size: 15px; font-weight: 700; margin-bottom: 30px; }
+  .lead-main .ref span { color: var(--gray); font-weight: 500; }
+  blockquote {
+    margin: 0 0 36px; padding: 4px 0 4px 22px; border-left: 3px solid var(--seal);
+    font-family: var(--myeongjo); font-size: 18px; line-height: 1.9; max-width: 30em;
+  }
+  blockquote cite { display: block; font-style: normal; font-family: var(--gothic); font-size: 13px; color: var(--gray); margin-top: 10px; }
+  .lead-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .act {
+    display: inline-block; padding: 14px 26px; font-size: 15px; font-weight: 800;
+    background: var(--ink); color: var(--paper); border: 1.5px solid var(--ink);
+  }
+  .act:hover { background: var(--seal); border-color: var(--seal); }
+  .act:focus-visible { outline: 2px solid var(--seal); outline-offset: 3px; }
+  .act.line { background: transparent; color: var(--ink); }
+  .act.line:hover { background: var(--ink); color: var(--paper); }
+
+  /* 우측 난: 예배·알림 */
+  .lead-side { border-left: 1px solid var(--line-dark); display: flex; flex-direction: column; }
+  @media (max-width: 880px) { .lead-side { border-left: none; border-top: 1px solid var(--line-dark); } }
+  .side-block { padding: 34px 0 34px 34px; border-bottom: 1px solid var(--line); }
+  .side-block:last-child { border-bottom: none; }
+  @media (max-width: 880px) { .side-block { padding: 30px 0; } }
+  .side-block h3 { font-size: 14px; font-weight: 800; letter-spacing: 0.2em; margin: 0 0 20px; }
+  .tt { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  .tt tr { border-bottom: 1px solid var(--line); }
+  .tt tr:last-child { border-bottom: none; }
+  .tt th { text-align: left; font-weight: 600; padding: 10px 0; color: var(--ink); }
+  .tt td { text-align: right; padding: 10px 0; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tt .loc { display: block; font-size: 12px; font-weight: 400; color: var(--gray); }
+  .side-note { font-size: 12px; color: var(--gray); margin: 12px 0 0; }
+  .notice { display: block; padding: 11px 0; border-bottom: 1px dotted var(--line); font-size: 14.5px; }
+  .notice:last-of-type { border-bottom: none; }
+  .notice .d { font-size: 12px; color: var(--gray); display: block; }
+  .notice:hover { color: var(--seal); }
+
+  /* ── 섹션 공통: 괘선 헤더 + 세로 표기 ── */
+  .rule-sec { border-top: 2.5px solid var(--line-dark); }
+  .sec-bar { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .sec-bar h3 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: 0.14em; }
+  .sec-bar .en { font-size: 11px; color: var(--gray); letter-spacing: 0.18em; }
+  .sec-bar a { font-size: 13.5px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+  .sec-bar a:hover { color: var(--seal); }
+
+  /* 지난 말씀 */
+  .arch { display: grid; grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 720px) { .arch { grid-template-columns: 1fr; } }
+  .arch a {
+    display: grid; grid-template-columns: 92px 1fr; gap: 18px; align-items: baseline;
+    padding: 24px 28px 24px 0; border-bottom: 1px solid var(--line);
+  }
+  .arch a:nth-child(odd) { border-right: 1px solid var(--line); }
+  @media (max-width: 720px) { .arch a:nth-child(odd) { border-right: none; } .arch a { padding-right: 0; } }
+  .arch a:nth-child(even) { padding-left: 28px; }
+  @media (max-width: 720px) { .arch a:nth-child(even) { padding-left: 0; } }
+  .arch .d { font-size: 12.5px; color: var(--gray); font-variant-numeric: tabular-nums; }
+  .arch .t { font-family: var(--myeongjo); font-size: 19px; font-weight: 700; line-height: 1.5; }
+  .arch .t small { display: block; font-family: var(--gothic); font-size: 12.5px; font-weight: 500; color: var(--gray); margin-top: 3px; }
+  .arch a:hover .t { color: var(--seal); }
+
+  /* 찬양 · 선교 2단 */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 880px) { .two-col { grid-template-columns: 1fr; } }
+  .col { padding: 0 0 48px; }
+  .col:first-child { border-right: 1px solid var(--line-dark); padding-right: 44px; }
+  .col:last-child { padding-left: 44px; }
+  @media (max-width: 880px) {
+    .col:first-child { border-right: none; padding-right: 0; border-bottom: 1px solid var(--line-dark); }
+    .col:last-child { padding-left: 0; }
+  }
+  .col .body { padding-top: 26px; font-size: 15px; }
+  .col .body p { margin: 0 0 16px; max-width: 34em; }
+  .video-line { display: flex; gap: 14px; align-items: center; padding: 16px 0; border-top: 1px solid var(--line); }
+  .video-line:first-of-type { margin-top: 8px; }
+  .video-line .pl {
+    width: 40px; height: 40px; flex: none; border: 1.5px solid var(--ink); border-radius: 50%;
+    display: grid; place-items: center;
+  }
+  .video-line .pl svg { width: 11px; height: 11px; fill: var(--ink); margin-left: 2px; }
+  .video-line:hover .pl { background: var(--ink); }
+  .video-line:hover .pl svg { fill: var(--paper); }
+  .video-line .t { font-weight: 700; font-size: 15px; }
+  .video-line .m { display: block; font-size: 12.5px; color: var(--gray); font-weight: 400; }
+  .pray { margin: 8px 0 0; padding: 0; list-style: none; }
+  .pray li { padding: 13px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 70px 1fr; gap: 14px; }
+  .pray .where { font-weight: 800; font-size: 13.5px; padding-top: 2px; }
+  .pray .what { color: var(--ink); font-size: 14.5px; }
+  .pray .what small { display: block; color: var(--gray); font-size: 12.5px; }
+
+  /* 처음 오신 분 · 오시는 길 */
+  .visit { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  @media (max-width: 880px) { .visit { grid-template-columns: 1fr; } }
+  .visit-l { padding: 40px 44px 56px 0; }
+  .visit-r { border-left: 1px solid var(--line-dark); padding: 40px 0 56px 44px; }
+  @media (max-width: 880px) {
+    .visit-l { padding: 32px 0 40px; }
+    .visit-r { border-left: none; border-top: 1px solid var(--line); padding: 32px 0 40px; }
+  }
+  .visit h4 { font-family: var(--myeongjo); font-size: 24px; font-weight: 800; margin: 0 0 16px; }
+  .visit p { margin: 0 0 14px; font-size: 15px; max-width: 32em; }
+  .visit .muted { color: var(--gray); font-size: 13.5px; }
+  .info { margin: 20px 0 0; display: grid; grid-template-columns: 76px 1fr; row-gap: 10px; font-size: 14.5px; }
+  .info dt { font-weight: 800; }
+  .info dd { margin: 0; }
+  .map-ph {
+    margin-top: 24px; border: 1px solid var(--line-dark); height: 200px;
+    display: grid; place-items: center; font-size: 12.5px; color: var(--gray);
+    background: repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(27,27,25,0.05) 24px),
+      repeating-linear-gradient(90deg, transparent, transparent 23px, rgba(27,27,25,0.05) 24px);
+  }
+
+  /* ── 발행 정보 ── */
+  footer { border-top: 2.5px solid var(--line-dark); margin-top: 8px; }
+  .foot { padding: 30px 0 56px; display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--gray); }
+  .foot .pub strong { color: var(--ink); font-weight: 800; }
+  .foot .pub { line-height: 1.9; }
+  .foot .seal-s {
+    width: 38px; height: 38px; background: var(--seal); color: #F7F5EF; border-radius: 3px;
+    font-family: var(--myeongjo); font-weight: 800; font-size: 12.5px; display: grid; place-items: center; rotate: -3deg;
+  }
+</style>
+
+<div class="topline">
+  <div class="wrap topline-inner">
+    <span id="today">주일을 준비하는 한 주간</span>
+    <span><a href="#">유튜브 말씀 채널</a> · <a href="#visit">오시는 길</a></span>
+  </div>
+</div>
+
+<header class="mast wrap">
+  <div class="weekly">週報</div>
+  <h1>안양세계선교교회</h1>
+  <div class="issue">
+    <span id="issue-no">제2,190호</span>
+    <span id="issue-date">2026년 7월 12일 주일</span>
+    <span>대한예수교장로회(개혁)</span>
+  </div>
+  <div class="seal" aria-hidden="true">세선</div>
+</header>
+
+<nav class="navline">
+  <div class="navline-inner">
+    <a href="#word">말씀</a>
+    <a href="#worship">예배</a>
+    <a href="#praise">찬양</a>
+    <a href="#mission">선교</a>
+    <a href="#notice">알림</a>
+    <a href="#visit">오시는 길</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <div class="lead" id="word">
+    <article class="lead-main">
+      <div class="kicker">
+        <span class="box">이번 주 말씀</span>
+        <span class="date">2022년 3월 6일 주일예배</span>
+      </div>
+      <h2>이사야의 바벨론<br>정복 예언</h2>
+      <p class="ref">이사야 43장 14–21절 <span>· 담임목사 ○○○</span></p>
+      <blockquote>
+        "보라 내가 새 일을 행하리니 이제 나타낼 것이라 너희가 그것을 알지 못하겠느냐
+        반드시 내가 광야에 길을 사막에 강을 내리니"
+        <cite>이사야 43:19</cite>
+      </blockquote>
+      <div class="lead-actions">
+        <a class="act" href="#" id="worship-anchor">유튜브에서 말씀 듣기</a>
+        <a class="act line" href="#archive">지난 말씀 보기</a>
+      </div>
+    </article>
+
+    <aside class="lead-side" id="worship">
+      <div class="side-block">
+        <h3>예배 안내</h3>
+        <table class="tt">
+          <tr><th>주일예배 1부</th><td>오전 9:00<span class="loc">본당</span></td></tr>
+          <tr><th>주일예배 2부</th><td>오전 11:00<span class="loc">본당 · 유튜브 중계</span></td></tr>
+          <tr><th>주일학교</th><td>오전 11:00<span class="loc">교육관</span></td></tr>
+          <tr><th>수요예배</th><td>저녁 7:30<span class="loc">본당</span></td></tr>
+          <tr><th>새벽기도회</th><td>매일 5:30<span class="loc">본당</span></td></tr>
+        </table>
+        <p class="side-note">시간은 시안용 예시입니다. 누구든 오실 수 있습니다.</p>
+      </div>
+      <div class="side-block" id="notice">
+        <h3>금주 알림</h3>
+        <a class="notice" href="#"><span class="d">7월 12일</span>전교인 야외예배 — 장소·차량 안내</a>
+        <a class="notice" href="#"><span class="d">7월 19일</span>여름 단기선교 파송 예배</a>
+        <a class="notice" href="#"><span class="d">상시</span>새벽기도회 본당으로 장소 변경</a>
+      </div>
+    </aside>
+  </div>
+
+  <section class="rule-sec" id="archive">
+    <div class="sec-bar">
+      <h3>지난 말씀</h3>
+      <a href="#">아카이브 전체 보기</a>
+    </div>
+    <div class="arch">
+      <a href="#">
+        <span class="d">2022. 2. 20</span>
+        <span class="t">미리 정복한 엘리야<small>열왕기상 18:16–24</small></span>
+      </a>
+      <a href="#">
+        <span class="d">2022. 2. 13</span>
+        <span class="t">세계를 미리 정복한 다윗<small>시편 78:70–72</small></span>
+      </a>
+      <a href="#">
+        <span class="d">2022. 2. 6</span>
+        <span class="t">블레셋을 미리 정복한 사무엘<small>사무엘상 3:19–21</small></span>
+      </a>
+      <a href="#">
+        <span class="d">2022. 1. 30</span>
+        <span class="t">미리 정복한 라합<small>여호수아 2:1–14</small></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="rule-sec" style="margin-top: 56px">
+    <div class="two-col">
+      <div class="col" id="praise">
+        <div class="sec-bar">
+          <h3>세선찬양대</h3>
+          <a href="#">찬양 채널</a>
+        </div>
+        <div class="body">
+          <p>매 주일 2부 예배의 찬양 순서를 맡고 있습니다. 지난 찬양은 유튜브에서
+          다시 들을 수 있습니다.</p>
+          <a class="video-line" href="#">
+            <span class="pl"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z"/></svg></span>
+            <span><span class="t">주 하나님 지으신 모든 세계</span><span class="m">7월 첫째 주 찬양</span></span>
+          </a>
+          <a class="video-line" href="#">
+            <span class="pl"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z"/></svg></span>
+            <span><span class="t">내 영혼의 그윽이 깊은 데서</span><span class="m">6월 넷째 주 찬양</span></span>
+          </a>
+        </div>
+      </div>
+      <div class="col" id="mission">
+        <div class="sec-bar">
+          <h3>선교 소식</h3>
+          <a href="#">선교 현장</a>
+        </div>
+        <div class="body">
+          <p>지역과 민족과 세계를 선교하는 교회. 파송 선교지의 소식과 기도제목을
+          매주 나눕니다.</p>
+          <ul class="pray">
+            <li><span class="where">동남아</span><span class="what">현지 교회 건축 마무리<small>우기 전 완공을 위해</small></span></li>
+            <li><span class="where">중앙아</span><span class="what">신학교 2학기 개강<small>교재와 강사진을 위해</small></span></li>
+            <li><span class="where">국내</span><span class="what">이주민 예배 개설 준비<small>통역 봉사자를 위해</small></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rule-sec" id="visit">
+    <div class="visit">
+      <div class="visit-l">
+        <h4>처음 오시는 분께</h4>
+        <p>주일 오전 9시와 11시, 어느 예배든 그냥 오시면 됩니다.
+        따로 준비할 것은 없습니다. 입구에서 안내위원이 자리를 안내해 드립니다.</p>
+        <p>아이와 함께 오시는 경우 주일학교(교육관)가 같은 시간에 열립니다.</p>
+        <p class="muted">궁금한 것은 사무실(031-000-0000)로 전화 주시면 됩니다.</p>
+      </div>
+      <div class="visit-r">
+        <h4>오시는 길</h4>
+        <dl class="info">
+          <dt>주소</dt><dd>경기도 안양시 ○○구 ○○로 00 (실제 주소로 교체)</dd>
+          <dt>전화</dt><dd>031-000-0000</dd>
+          <dt>주차</dt><dd>교회 주차장 이용 안내 문구</dd>
+        </dl>
+        <div class="map-ph">지도 — 카카오맵 연동</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="pub">
+      <strong>안양세계선교교회</strong> · 담임목사 ○○○<br>
+      경기도 안양시 ○○구 ○○로 00 · 031-000-0000
+    </div>
+    <div class="pub" style="text-align: right">
+      이 주보는 매주 자동으로 새로 발행됩니다.<br>
+      시안 D — 주보 (v2)
+    </div>
+    <div class="seal-s" aria-hidden="true">세선</div>
+  </div>
+</footer>
+
+<script>
+  // 다가오는 주일 날짜와 호수를 실제 날짜로 계산해 표기
+  const now = new Date();
+  const sunday = new Date(now);
+  sunday.setDate(now.getDate() + ((7 - now.getDay()) % 7));
+  const fmt = sunday.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('issue-date').textContent = fmt + ' 주일';
+  // 개척 시점(예시: 1984년 1월 첫 주)부터의 주차 — 실제 창립일로 교체
+  const founded = new Date(1984, 0, 1);
+  const weeks = Math.floor((sunday - founded) / (7 * 24 * 3600 * 1000));
+  document.getElementById('issue-no').textContent = '제' + weeks.toLocaleString('ko-KR') + '호';
+  const remain = Math.floor((sunday - now) / (24 * 3600 * 1000));
+  document.getElementById('today').textContent =
+    remain === 0 ? '오늘은 주일입니다' : '주일까지 ' + remain + '일';
+</script>

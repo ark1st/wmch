@@ -1,0 +1,425 @@
+<title>시안 B — 마당 · 안양세계선교교회</title>
+<style>
+  :root {
+    --ground: #F7F8FA;
+    --ink: #14181F;
+    --blue: #335CFF;
+    --blue-deep: #2447D6;
+    --blue-soft: #E9EEFF;
+    --yellow: #FFC531;
+    --card: #FFFFFF;
+    --muted: #5D6470;
+    --line: #E8EAEF;
+    --sans: "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", -apple-system, sans-serif;
+    --shadow-s: 0 1px 2px rgba(20,24,31,0.04), 0 4px 14px rgba(20,24,31,0.05);
+    --shadow-l: 0 4px 10px rgba(20,24,31,0.05), 0 24px 48px rgba(20,24,31,0.12);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--sans); line-height: 1.65; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: 999px;
+    background: var(--blue-soft); color: var(--blue-deep); font-size: 13.5px; font-weight: 700;
+  }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+  @media (prefers-reduced-motion: no-preference) {
+    .chip .dot { animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: 0.35; } }
+  }
+
+  .js .reveal {
+    opacity: 0; translate: 0 26px;
+    transition: opacity 0.7s ease, translate 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .js .reveal.in { opacity: 1; translate: 0 0; }
+  @media (prefers-reduced-motion: reduce) { .js .reveal { opacity: 1; translate: 0 0; transition: none; } }
+
+  /* ── Nav ── */
+  nav { position: fixed; inset: 12px 0 auto; z-index: 100; padding: 0 16px; }
+  .nav-pill {
+    max-width: 1000px; margin: 0 auto; height: 60px; border-radius: 999px;
+    background: rgba(255,255,255,0.78); backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,0.7); box-shadow: var(--shadow-s);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 10px 0 24px;
+  }
+  .brand { font-weight: 900; font-size: 16.5px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+  .brand .mark { width: 28px; height: 32px; background: var(--blue); border-radius: 14px 14px 5px 5px; display: grid; place-items: center; }
+  .brand .mark svg { width: 11px; height: 13px; fill: #fff; }
+  .menu { display: flex; gap: 2px; align-items: center; font-size: 14px; font-weight: 600; }
+  .menu a { padding: 9px 14px; border-radius: 999px; transition: background 0.15s, color 0.15s; }
+  .menu a:hover { background: var(--blue-soft); color: var(--blue-deep); }
+  .menu a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .menu .cta { background: var(--ink); color: #fff; margin-left: 6px; }
+  .menu .cta:hover { background: var(--blue); color: #fff; }
+  @media (max-width: 880px) { .menu a:not(.cta) { display: none; } }
+
+  /* ── Hero ── */
+  .hero { position: relative; padding: 168px 0 90px; text-align: center; isolation: isolate; overflow: clip; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: -1; }
+  .blob.b1 { width: 560px; height: 560px; background: rgba(51, 92, 255, 0.16); top: -160px; left: -140px; }
+  .blob.b2 { width: 480px; height: 480px; background: rgba(255, 197, 49, 0.20); top: 40px; right: -160px; }
+  .blob.b3 { width: 420px; height: 420px; background: rgba(122, 92, 255, 0.10); bottom: -200px; left: 34%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .blob { animation: float 16s ease-in-out infinite alternate; }
+    .blob.b2 { animation-duration: 20s; animation-direction: alternate-reverse; }
+    @keyframes float { to { transform: translate(40px, -30px) scale(1.1); } }
+  }
+  .hero h1 {
+    font-size: clamp(38px, 6.6vw, 76px); line-height: 1.22; font-weight: 900;
+    letter-spacing: -0.035em; margin: 26px auto 20px; max-width: 14em; text-wrap: balance;
+  }
+  .hero h1 .hl { color: var(--blue); }
+  .hero p.lede { font-size: clamp(15.5px, 2vw, 18px); color: var(--muted); margin: 0 auto 40px; max-width: 30em; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 16px 30px; border-radius: 16px;
+    font-size: 15.5px; font-weight: 800; transition: transform 0.16s, box-shadow 0.16s, background 0.16s;
+  }
+  .btn:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+  .btn.primary { background: var(--blue); color: #fff; box-shadow: 0 8px 24px rgba(51, 92, 255, 0.35); }
+  .btn.primary:hover { background: var(--blue-deep); transform: translateY(-2px); box-shadow: 0 12px 30px rgba(51,92,255,0.4); }
+  .btn.ghost { background: #fff; box-shadow: var(--shadow-s); }
+  .btn.ghost:hover { transform: translateY(-2px); box-shadow: var(--shadow-l); }
+  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } .btn:hover { transform: none; } }
+
+  /* floating card collage */
+  .collage { margin-top: 76px; display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; perspective: 1000px; }
+  .f-card {
+    background: var(--card); border-radius: 24px; box-shadow: var(--shadow-l);
+    padding: 24px 26px; text-align: left; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+  .f-card:hover { transform: translateY(-8px) rotate(0deg) !important; }
+  @media (prefers-reduced-motion: reduce) { .f-card { transition: none; } }
+  .f-card.r1 { transform: rotate(-3deg); }
+  .f-card.r2 { transform: rotate(1.5deg) translateY(18px); }
+  .f-card.r3 { transform: rotate(3.5deg); }
+  @media (max-width: 720px) { .f-card.r1, .f-card.r2, .f-card.r3 { transform: none; } }
+  .f-card .k { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: 0.04em; }
+  .f-card .v { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .f-card .v.blue { color: var(--blue); }
+  .f-card .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .f-card.video { padding: 0; overflow: hidden; width: 300px; }
+  .f-card.video .vthumb {
+    aspect-ratio: 16 / 9; background: linear-gradient(135deg, #3A57D9, #16255F);
+    display: grid; place-items: center;
+  }
+  .f-card.video .vthumb .play { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.95); display: grid; place-items: center; }
+  .f-card.video .vthumb svg { width: 14px; height: 14px; fill: var(--blue-deep); margin-left: 2px; }
+  .f-card.video .vbody { padding: 16px 20px 20px; }
+  .f-card.video .vbody .k { color: var(--blue); }
+  .f-card.video .vbody .t { font-size: 15.5px; font-weight: 800; margin-top: 3px; }
+
+  /* ── marquee ── */
+  .ticker { padding: 30px 0; overflow: hidden; border-block: 1px solid var(--line); background: #fff; }
+  .ticker-track { display: flex; gap: 56px; width: max-content; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ticker-track { animation: marquee 32s linear infinite; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+  }
+  .ticker span { display: flex; gap: 56px; align-items: center; white-space: nowrap; font-size: 19px; font-weight: 900; letter-spacing: -0.01em; color: var(--ink); }
+  .ticker em { font-style: normal; color: var(--yellow); font-size: 15px; }
+
+  /* ── Sections ── */
+  section { padding: 104px 0; }
+  .eyebrow { font-size: 14px; font-weight: 800; color: var(--blue); margin: 0 0 14px; letter-spacing: 0.02em; }
+  h2.sec { font-size: clamp(28px, 4vw, 44px); font-weight: 900; letter-spacing: -0.03em; margin: 0 0 14px; text-wrap: balance; }
+  p.sec-sub { color: var(--muted); font-size: 16.5px; margin: 0 0 48px; max-width: 34em; }
+
+  /* worship */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); border-radius: 26px; padding: 32px 30px;
+    box-shadow: var(--shadow-s); transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-l); }
+  @media (prefers-reduced-motion: reduce) { .card:hover { transform: none; } }
+  .card .icon { width: 48px; height: 48px; border-radius: 16px; background: var(--blue-soft); display: grid; place-items: center; margin-bottom: 22px; }
+  .card .icon svg { width: 21px; height: 21px; stroke: var(--blue-deep); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { margin: 0; font-size: 16.5px; font-weight: 800; }
+  .card .time { font-size: 30px; font-weight: 900; color: var(--blue); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; margin-top: 6px; }
+  .card p { margin: 8px 0 0; font-size: 13.5px; color: var(--muted); }
+  .sched-note { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+
+  /* sermons */
+  .sermons { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .sermon-card {
+    background: var(--card); border-radius: 26px; overflow: hidden; box-shadow: var(--shadow-s);
+    transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column;
+  }
+  .sermon-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-l); }
+  @media (prefers-reduced-motion: reduce) { .sermon-card:hover { transform: none; } }
+  .thumb { aspect-ratio: 16 / 9; display: grid; place-items: center; }
+  .thumb.t1 { background: linear-gradient(135deg, #4468FF, #16255F); }
+  .thumb.t2 { background: linear-gradient(135deg, #6E8BFF, #2B3E8F); }
+  .thumb.t3 { background: linear-gradient(135deg, #202A3C, #0D1220); }
+  .thumb .play { width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.94); display: grid; place-items: center; backdrop-filter: blur(4px); }
+  .thumb .play svg { width: 16px; height: 16px; fill: var(--blue-deep); margin-left: 3px; }
+  .sermon-body { padding: 22px 24px 26px; }
+  .sermon-body .ref { font-size: 12.5px; font-weight: 800; color: var(--blue); }
+  .sermon-body h3 { margin: 6px 0 8px; font-size: 18px; font-weight: 800; line-height: 1.4; letter-spacing: -0.01em; }
+  .sermon-body .date { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* vision — dark rounded band */
+  .vision-band {
+    background: var(--ink); border-radius: 40px; color: #fff; padding: 72px 64px;
+    position: relative; overflow: hidden; isolation: isolate;
+  }
+  @media (max-width: 640px) { .vision-band { padding: 48px 28px; border-radius: 30px; } }
+  .vision-band::after {
+    content: ""; position: absolute; z-index: -1; width: 520px; height: 520px; border-radius: 50%;
+    background: rgba(51, 92, 255, 0.35); filter: blur(110px); bottom: -260px; right: -140px;
+  }
+  .vision-band .eyebrow { color: var(--yellow); }
+  .vision-band h2 { color: #fff; }
+  .vision-band p.sec-sub { color: #9AA3B2; }
+  .v-rows { display: flex; flex-direction: column; }
+  .v-row {
+    display: grid; grid-template-columns: 54px 1fr; gap: 20px; align-items: baseline;
+    padding: 21px 0; border-bottom: 1px solid rgba(255,255,255,0.10); font-size: clamp(18px, 2.6vw, 26px); font-weight: 800; letter-spacing: -0.02em;
+  }
+  .v-row:last-child { border-bottom: none; }
+  .v-row .n { font-size: 13px; font-weight: 800; color: var(--yellow); font-variant-numeric: tabular-nums; }
+  .v-row .hl { color: var(--yellow); }
+
+  /* stats band */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .stat {
+    background: var(--card); border-radius: 26px; padding: 36px 32px; box-shadow: var(--shadow-s);
+  }
+  .stat .num { font-size: clamp(40px, 5vw, 56px); font-weight: 900; letter-spacing: -0.04em; color: var(--blue); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat .num small { font-size: 0.42em; color: var(--ink); font-weight: 900; letter-spacing: -0.01em; }
+  .stat .desc { margin-top: 8px; font-size: 14.5px; color: var(--muted); font-weight: 600; }
+
+  /* visit */
+  .visit-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 18px; }
+  @media (max-width: 760px) { .visit-grid { grid-template-columns: 1fr; } }
+  .visit-card { background: var(--card); border-radius: 26px; padding: 36px 34px; box-shadow: var(--shadow-s); }
+  .visit-card h3 { margin: 0 0 18px; font-size: 19px; font-weight: 900; letter-spacing: -0.01em; }
+  .visit-card dl { margin: 0; display: grid; grid-template-columns: 86px 1fr; row-gap: 13px; font-size: 15px; }
+  .visit-card dt { color: var(--muted); font-weight: 700; font-size: 13.5px; padding-top: 2px; }
+  .visit-card dd { margin: 0; font-weight: 600; }
+  .map-ph {
+    border-radius: 26px; min-height: 280px; box-shadow: var(--shadow-s);
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(51,92,255,0.06) 32px),
+      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(51,92,255,0.06) 32px),
+      var(--blue-soft);
+    display: grid; place-items: center; color: var(--blue-deep); font-weight: 800; font-size: 14px;
+  }
+
+  /* big CTA + footer */
+  .big-cta {
+    background: linear-gradient(135deg, var(--blue), #5E3DF0); border-radius: 40px;
+    color: #fff; text-align: center; padding: 80px 32px; position: relative; overflow: hidden;
+  }
+  .big-cta h2 { font-size: clamp(28px, 4.4vw, 48px); font-weight: 900; letter-spacing: -0.03em; margin: 0 0 14px; }
+  .big-cta p { margin: 0 0 36px; color: rgba(255,255,255,0.8); font-size: 16px; }
+  .big-cta .btn { background: #fff; color: var(--blue-deep); }
+  .big-cta .btn:hover { transform: translateY(-2px); }
+  footer { padding: 64px 0 72px; color: var(--muted); font-size: 13.5px; }
+  .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-top: 1.5px solid var(--line); padding-top: 34px; }
+  .foot strong { color: var(--ink); font-weight: 800; }
+</style>
+
+<nav>
+  <div class="nav-pill">
+    <a class="brand" href="#">
+      <span class="mark"><svg viewBox="0 0 12 14" aria-hidden="true"><path d="M5 0h2v4h4v2H7v8H5V6H1V4h4z"/></svg></span>
+      안양세계선교교회
+    </a>
+    <div class="menu">
+      <a href="#about">교회소개</a>
+      <a href="#worship">예배안내</a>
+      <a href="#sermon">말씀</a>
+      <a href="#stats">선교</a>
+      <a class="cta" href="#visit">처음 오셨나요?</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="blob b1" aria-hidden="true"></div>
+  <div class="blob b2" aria-hidden="true"></div>
+  <div class="blob b3" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="chip"><span class="dot"></span>이번 주일 오전 11시, 유튜브 동시 중계</span>
+    <h1>복음으로<br><span class="hl">생명을 살리는</span> 교회</h1>
+    <p class="lede">개척 이래 40여 년, 안양에서 지역과 민족과 세계를 섬겨온
+    안양세계선교교회가 여러분을 환영합니다.</p>
+    <div>
+      <a class="btn primary" href="#worship">예배 시간 보기</a>
+      <a class="btn ghost" href="#visit">오시는 길 →</a>
+    </div>
+
+    <div class="collage">
+      <div class="f-card r1">
+        <div class="k">주일예배</div>
+        <div class="v blue">9:00 · 11:00</div>
+        <div class="sub">본당 · 2부 유튜브 중계</div>
+      </div>
+      <a class="f-card r2 video" href="#">
+        <div class="vthumb"><span class="play"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z"/></svg></span></div>
+        <div class="vbody">
+          <div class="k">최신 말씀</div>
+          <div class="t">이사야의 바벨론 정복 예언</div>
+        </div>
+      </a>
+      <div class="f-card r3">
+        <div class="k">새벽기도회</div>
+        <div class="v">매일 5:30</div>
+        <div class="sub">본당 · 누구나 참여</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>복음 <em>✦</em> 기도 <em>✦</em> 전도 <em>✦</em> 후대 RT <em>✦</em> 세계선교 <em>✦</em> 복음 <em>✦</em> 기도 <em>✦</em> 전도 <em>✦</em> 후대 RT <em>✦</em> 세계선교 <em>✦</em></span>
+    <span>복음 <em>✦</em> 기도 <em>✦</em> 전도 <em>✦</em> 후대 RT <em>✦</em> 세계선교 <em>✦</em> 복음 <em>✦</em> 기도 <em>✦</em> 전도 <em>✦</em> 후대 RT <em>✦</em> 세계선교 <em>✦</em></span>
+  </div>
+</div>
+
+<section id="worship">
+  <div class="wrap">
+    <p class="eyebrow reveal">예배 안내</p>
+    <h2 class="sec reveal">함께 드리는 예배</h2>
+    <p class="sec-sub reveal">처음 오시는 분도 편안하게 참여하실 수 있습니다. 모든 예배는 본당에서 드리며, 주일 2부 예배는 유튜브로도 함께합니다.</p>
+    <div class="cards">
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <h3>주일예배</h3>
+        <div class="time">9:00 · 11:00</div>
+        <p>본당 · 2부는 유튜브 동시 중계</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 8l7-5 7 5"/></svg></span>
+        <h3>수요예배</h3>
+        <div class="time">19:30</div>
+        <p>본당</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 1 9-9c0 1-.2 2-.5 2.9L12 12z"/></svg></span>
+        <h3>새벽기도회</h3>
+        <div class="time">5:30</div>
+        <p>매일 · 본당</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21v-6a4 4 0 0 1 8 0v6M4 10l8-7 8 7"/></svg></span>
+        <h3>주일학교</h3>
+        <div class="time">11:00</div>
+        <p>다음 세대(RT) 교육관</p>
+      </div>
+    </div>
+    <p class="sched-note">* 예배 시간은 시안용 예시입니다</p>
+  </div>
+</section>
+
+<section id="sermon">
+  <div class="wrap">
+    <p class="eyebrow reveal">생명의 말씀</p>
+    <h2 class="sec reveal">이번 주, 말씀으로</h2>
+    <p class="sec-sub reveal">주일 설교가 유튜브에 올라오면 이 자리에 자동으로 게시됩니다.</p>
+    <div class="sermons">
+      <a class="sermon-card reveal" href="#">
+        <div class="thumb t1"><span class="play"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z"/></svg></span></div>
+        <div class="sermon-body">
+          <span class="ref">이사야 43:14–21</span>
+          <h3>이사야의 바벨론 정복 예언</h3>
+          <span class="date">2022년 3월 6일 주일예배</span>
+        </div>
+      </a>
+      <a class="sermon-card reveal" href="#">
+        <div class="thumb t2"><span class="play"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z"/></svg></span></div>
+        <div class="sermon-body">
+          <span class="ref">열왕기상 18:16–24</span>
+          <h3>미리 정복한 엘리야</h3>
+          <span class="date">2022년 2월 20일 주일예배</span>
+        </div>
+      </a>
+      <a class="sermon-card reveal" href="#">
+        <div class="thumb t3"><span class="play"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z"/></svg></span></div>
+        <div class="sermon-body">
+          <span class="ref">시편 78:70–72</span>
+          <h3>세계를 미리 정복한 다윗</h3>
+          <span class="date">2022년 2월 13일 주일예배</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="vision-band reveal">
+      <p class="eyebrow">우리의 비전</p>
+      <h2 class="sec">다섯 가지 약속</h2>
+      <p class="sec-sub">안양세계선교교회가 지역과 민족과 세계 앞에 드리는 약속입니다.</p>
+      <div class="v-rows">
+        <div class="v-row"><span class="n">01</span><span><span class="hl">복음</span> 중심으로 생명 살리는 교회</span></div>
+        <div class="v-row"><span class="n">02</span><span><span class="hl">기도</span> 중심으로 응답 받는 교회</span></div>
+        <div class="v-row"><span class="n">03</span><span><span class="hl">전도</span> 중심으로 부흥하는 교회</span></div>
+        <div class="v-row"><span class="n">04</span><span><span class="hl">후대 RT</span>의 발판 되는 교회</span></div>
+        <div class="v-row"><span class="n">05</span><span>지역 · 민족 · <span class="hl">세계</span>를 선교하는 교회</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stats" style="padding-top: 0">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat reveal"><div class="num">40<small>여 년</small></div><div class="desc">한 자리에서 이어온 목회</div></div>
+      <div class="stat reveal"><div class="num">매주</div><div class="desc">유튜브로 만나는 새 말씀과 찬양</div></div>
+      <div class="stat reveal"><div class="num">5<small>가지</small></div><div class="desc">지역·민족·세계를 향한 비전</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="visit" style="padding-top: 0">
+  <div class="wrap">
+    <p class="eyebrow reveal">오시는 길</p>
+    <h2 class="sec reveal">교회에서 만나요</h2>
+    <p class="sec-sub reveal">궁금한 점이 있으시면 언제든 전화 주세요. 반갑게 안내해 드리겠습니다.</p>
+    <div class="visit-grid">
+      <div class="visit-card reveal">
+        <h3>안양세계선교교회</h3>
+        <dl>
+          <dt>주소</dt><dd>경기도 안양시 ○○구 ○○로 00 (실제 주소로 교체)</dd>
+          <dt>전화</dt><dd>031-000-0000</dd>
+          <dt>주차</dt><dd>교회 주차장 이용 안내 문구</dd>
+          <dt>대중교통</dt><dd>지하철·버스 이용 안내 문구</dd>
+        </dl>
+      </div>
+      <div class="map-ph reveal">지도 영역 · 카카오맵 연동</div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top: 0">
+  <div class="wrap">
+    <div class="big-cta reveal">
+      <h2>이번 주일,<br>함께 예배드려요</h2>
+      <p>처음 오시는 분을 위해 안내 팀이 기다리고 있습니다.</p>
+      <a class="btn" href="#visit">오시는 길 확인하기</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div><strong>안양세계선교교회</strong> · 담임목사 ○○○</div>
+    <div>시안 B — 마당 v2</div>
+  </div>
+</footer>
+
+<script>
+  document.body.classList.add('js');
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>

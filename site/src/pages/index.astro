@@ -1,0 +1,229 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { church } from '../data/church';
+
+const sermons = (await getCollection('sermons')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const featured = sermons[0];
+const recent = sermons.slice(1, 5);
+
+const fmtLong = (d: Date) =>
+  d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+const fmtShort = (d: Date) =>
+  `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+---
+<Base>
+  <div class="dots" id="dots" aria-label="페이지 이동"></div>
+
+  <header class="hero panel" data-dark data-title="처음">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-main">
+      <span class="ov">{church.nameEn}</span>
+      <h1><span class="w">복음으로</span><br /><span class="w">생명을</span> <span class="w">살리는</span> <span class="w">교회</span></h1>
+      <p class="sub">{church.name}는 개척 이래 40여 년, 한 자리에서 지역과 민족과 세계를 섬겨 왔습니다.</p>
+      <div class="cta-row">
+        <a class="btn white" href="#sermon">이번 주 말씀 보기</a>
+        <a class="btn outline" href="#worship">예배 안내</a>
+      </div>
+    </div>
+    <div class="hero-bar">
+      <div class="hero-bar-inner">
+        <div class="hb"><span class="k">주일예배</span><span class="v">오전 9:00 · 11:00</span></div>
+        <div class="hb"><span class="k">수요예배</span><span class="v">저녁 7:30</span></div>
+        <div class="hb"><span class="k">Live</span><span class="v"><span class="live"></span>주일 11시 유튜브 중계</span></div>
+        <div class="hb"><span class="k">Where</span><span class="v">경기도 안양시</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="sermon" class="panel" data-title="말씀">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="ov">The Word</span>
+        <h2>이번 주 말씀</h2>
+        <p>주일 설교가 유튜브에 올라오면 이 자리에 자동으로 게시됩니다.</p>
+      </div>
+      <div class="sermon-grid">
+        <a class="feat reveal" href={featured.data.youtube ?? church.youtube} target="_blank" rel="noopener">
+          <span class="bg" aria-hidden="true"></span>
+          <span class="play"><svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0v12l10-6z"/></svg></span>
+          <span class="badge">LATEST</span>
+          <span class="ref">{featured.data.scripture}</span>
+          <h3>{featured.data.title}</h3>
+          <span class="date">{fmtLong(featured.data.date)} · 주일예배</span>
+        </a>
+        <div class="sermon-side reveal">
+          <div>
+            {recent.map((s) => (
+              <a class="s-item" href={s.data.youtube ?? church.youtube} target="_blank" rel="noopener">
+                <span class="t">{s.data.title}</span>
+                <span class="m">{s.data.scriptureShort} · {fmtShort(s.data.date)}</span>
+              </a>
+            ))}
+          </div>
+          <a class="s-more" href="/sermons">말씀 아카이브 전체 보기 →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="statement panel" data-dark data-title="비전">
+    <div class="wrap">
+      <span class="ov">Our Vision</span>
+      <p id="statement-p">우리는 <b>복음</b>으로 생명을 살리고, <b>기도</b>로 응답을 경험하며, <b>전도</b>로 부흥을 꿈꾸고, <b>다음 세대</b>의 발판이 되어, 안양에서 <b>세계</b>를 품습니다.</p>
+    </div>
+  </section>
+
+  <section id="worship" class="panel" data-title="예배">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="ov">Worship</span>
+        <h2>예배 안내</h2>
+      </div>
+      <div class="worship-grid">
+        <div class="reveal">
+          <table class="wt">
+            {church.services.map((s) => (
+              <tr><th>{s.name}<small>{s.place}</small></th><td>{s.time}</td></tr>
+            ))}
+          </table>
+          <p class="wt-note">* 시간은 시안용 예시입니다. 실제 시간으로 교체됩니다.</p>
+        </div>
+        <div class="first-box reveal">
+          <h3>처음 오시는 분께</h3>
+          <p>어느 예배든 그냥 오시면 됩니다. 따로 준비할 것은 없고, 입구에서 안내위원이 자리를 안내해 드립니다.</p>
+          <p>아이와 함께 오시면 같은 시간 주일학교에서 함께 예배할 수 있습니다.</p>
+          <p class="muted">궁금한 점은 사무실({church.tel})로 전화 주세요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" data-title="사역">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="ov">Ministries</span>
+        <h2>교회의 하루하루</h2>
+      </div>
+      <div class="mins">
+        <a class="min m1 reveal" href={church.youtube} target="_blank" rel="noopener">
+          <span class="bg" aria-hidden="true"></span>
+          <h3>세선찬양대</h3>
+          <p>매주 주일, 예배의 문을 여는 찬양</p>
+          <span class="go">찬양 영상 보기 <span>→</span></span>
+        </a>
+        <a class="min m2 reveal" href="#worship">
+          <span class="bg" aria-hidden="true"></span>
+          <h3>다음 세대 RT</h3>
+          <p>후대의 발판이 되는 교회</p>
+          <span class="go">교육 안내 <span>→</span></span>
+        </a>
+        <a class="min m3 reveal" href="#visit">
+          <span class="bg" aria-hidden="true"></span>
+          <h3>선교 현장</h3>
+          <p>지역에서 민족으로, 민족에서 세계로</p>
+          <span class="go">선교 소식 <span>→</span></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="visit" class="panel" data-title="오시는 길">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="ov">Visit</span>
+        <h2>오시는 길</h2>
+      </div>
+      <div class="visit-grid">
+        <div class="reveal">
+          <dl>
+            <dt>주소</dt><dd>{church.address}</dd>
+            <dt>전화</dt><dd>{church.tel}</dd>
+            <dt>주차</dt><dd>교회 주차장 이용 안내 문구</dd>
+            <dt>대중교통</dt><dd>지하철·버스 이용 안내 문구</dd>
+          </dl>
+          <p class="visit-call">방문 전에 연락 주시면 주차와 자리를 미리 안내해 드립니다. <strong>{church.tel}</strong></p>
+        </div>
+        <div class="map-ph reveal">MAP — 카카오맵 연동</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="end panel" data-dark data-title="마침">
+    <div class="final">
+      <div class="final-inner">
+        <div>
+          <h2>이번 주일에<br />뵙겠습니다</h2>
+          <p class="t">주일 오전 9:00 · 11:00 — 오시기 어려우면 유튜브로 함께하세요.</p>
+        </div>
+        <a class="btn white" href="#visit">오시는 길</a>
+      </div>
+    </div>
+    <footer class="foot">
+      <span><strong>{church.name}</strong> · {church.pastor} · {church.denomination}</span>
+      <span><a href="#sermon">말씀</a> · <a href="#worship">예배 안내</a> · <a href="#visit">오시는 길</a></span>
+      <span>ⓒ {church.nameEn}</span>
+    </footer>
+  </div>
+
+  <script>
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const io = new IntersectionObserver((es) => {
+      for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+    // 페이지 도트 + 다크 패널 위 내비 색 전환
+    const panels = [...document.querySelectorAll<HTMLElement>('.panel')];
+    const dotsBox = document.getElementById('dots')!;
+    const dots = panels.map((p) => {
+      const b = document.createElement('button');
+      b.setAttribute('aria-label', (p.dataset.title || '섹션') + ' 페이지로');
+      b.addEventListener('click', () => p.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }));
+      dotsBox.appendChild(b);
+      return b;
+    });
+    const pio = new IntersectionObserver((es) => {
+      for (const e of es) {
+        if (!e.isIntersecting) continue;
+        const i = panels.indexOf(e.target as HTMLElement);
+        dots.forEach((d, j) => d.classList.toggle('on', j === i));
+        document.body.classList.toggle('on-dark', 'dark' in (e.target as HTMLElement).dataset);
+      }
+    }, { threshold: 0.55 });
+    panels.forEach((p) => pio.observe(p));
+
+    // 비전 문장: 패널 진입 시 단어 순차 점등
+    const stp = document.getElementById('statement-p')!;
+    const words: HTMLElement[] = [];
+    for (const node of [...stp.childNodes]) {
+      if (node.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        for (const w of (node.textContent || '').split(/(\s+)/)) {
+          if (/^\s+$/.test(w) || w === '') { frag.appendChild(document.createTextNode(w)); continue; }
+          const s = document.createElement('span'); s.className = 'sw'; s.textContent = w;
+          frag.appendChild(s); words.push(s);
+        }
+        stp.replaceChild(frag, node);
+      } else if ((node as HTMLElement).tagName === 'B') {
+        (node as HTMLElement).classList.add('sw', 'key'); words.push(node as HTMLElement);
+      }
+    }
+    if (reduced) {
+      words.forEach((w) => w.classList.add('lit'));
+    } else {
+      let played = false;
+      const sio = new IntersectionObserver((es) => {
+        for (const e of es) if (e.isIntersecting && e.intersectionRatio > 0.6 && !played) {
+          played = true;
+          words.forEach((w, i) => setTimeout(() => w.classList.add('lit'), 350 + i * 90));
+          sio.disconnect();
+        }
+      }, { threshold: [0.6] });
+      sio.observe(stp.closest('.panel')!);
+    }
+  </script>
+</Base>

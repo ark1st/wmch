@@ -1,0 +1,36 @@
+---
+import '../styles/global.css';
+import { church } from '../data/church';
+
+interface Props { title?: string; description?: string }
+const { title = church.name, description = '복음으로 생명을 살리는 교회, 안양세계선교교회' } = Astro.props;
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <nav class="top">
+      <div class="nav-inner">
+        <a class="brand" href="/">{church.name}</a>
+        <div class="nav-links">
+          <a href="/#sermon">말씀</a>
+          <a href="/#worship">예배 안내</a>
+          <a href="/#visit">오시는 길</a>
+          <a class="nav-cta" href="/sermons">이번 주 말씀</a>
+        </div>
+      </div>
+    </nav>
+    <slot />
+    <script>
+      document.body.classList.add('js');
+      const onScroll = () => document.body.classList.toggle('scrolled', scrollY > 40);
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    </script>
+  </body>
+</html>
