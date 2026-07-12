@@ -9,6 +9,7 @@ const sermons = (await getCollection('sermons')).sort(
 const featured = sermons[0];
 const recent = sermons.slice(1, 5);
 
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const fmtLong = (d: Date) =>
   d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 const fmtShort = (d: Date) =>
@@ -63,7 +64,7 @@ const fmtShort = (d: Date) =>
               </a>
             ))}
           </div>
-          <a class="s-more" href="/sermons">말씀 아카이브 전체 보기 →</a>
+          <a class="s-more" href={`${base}sermons/`}>말씀 아카이브 전체 보기 →</a>
         </div>
       </div>
     </div>

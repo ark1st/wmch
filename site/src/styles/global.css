@@ -94,7 +94,7 @@ body.scrolled:not(.on-dark) .nav-cta { background: var(--ink); color: #fff !impo
   /* 사진 위에 딥그린 워시 → 사진 없으면 그라디언트 폴백 */
   background:
     linear-gradient(180deg, rgba(19, 28, 24, 0.5), rgba(16, 21, 18, 0.62)),
-    url('/images/hero.jpg') center / cover no-repeat,
+    url('../assets/img/hero.jpg') center / cover no-repeat,
     radial-gradient(120% 90% at 75% 8%, rgba(96, 134, 122, 0.5), transparent 55%),
     linear-gradient(178deg, #232B28 0%, #101512 100%);
 }
@@ -169,7 +169,7 @@ h2 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; letter-spacing: -0.04e
   position: absolute; inset: 0; z-index: -1; transition: scale 0.6s ease; scale: 1.001;
   background:
     linear-gradient(180deg, rgba(26, 26, 22, 0.28), rgba(19, 19, 17, 0.45)),
-    url('/images/hero.jpg') center / cover no-repeat,
+    url('../assets/img/hero.jpg') center / cover no-repeat,
     linear-gradient(190deg, #3A3A33, #131311 75%);
 }
 .feat:hover .bg { scale: 1.045; }
@@ -237,19 +237,19 @@ h2 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; letter-spacing: -0.04e
 .min.m1 .bg {
   background:
     linear-gradient(180deg, rgba(30, 26, 18, 0.2), rgba(18, 20, 19, 0.4)),
-    url('/images/choir.jpg') center / cover no-repeat,
+    url('../assets/img/choir.jpg') center / cover no-repeat,
     linear-gradient(200deg, #2E3230, #121413);
 }
 .min.m2 .bg {
   background:
     linear-gradient(180deg, rgba(18, 24, 26, 0.2), rgba(16, 19, 18, 0.4)),
-    url('/images/kids.jpg') center / cover no-repeat,
+    url('../assets/img/kids.jpg') center / cover no-repeat,
     linear-gradient(200deg, #26302E, #101312);
 }
 .min.m3 .bg {
   background:
     linear-gradient(180deg, rgba(28, 20, 16, 0.2), rgba(19, 17, 16, 0.4)),
-    url('/images/mission.jpg') center / cover no-repeat,
+    url('../assets/img/mission.jpg') center / cover no-repeat,
     linear-gradient(200deg, #322C28, #131110);
 }
 .min::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 45%, rgba(10,10,9,0.7)); }
