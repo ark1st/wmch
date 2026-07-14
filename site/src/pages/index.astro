@@ -14,6 +14,12 @@ const fmtLong = (d: Date) =>
   d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 const fmtShort = (d: Date) =>
   `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+const sundaySummary = church.services
+  .filter((service) => service.name.startsWith('주일예배'))
+  .map((service) => service.time)
+  .join(' · ');
+const wednesdayTime = church.services.find((service) => service.name === '수요기도회')?.time;
+const mapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(church.address)}`;
 ---
 <Base>
   <div class="dots" id="dots" aria-label="페이지 이동"></div>
@@ -23,7 +29,7 @@ const fmtShort = (d: Date) =>
     <div class="hero-main">
       <span class="ov">{church.nameEn}</span>
       <h1><span class="w">복음으로</span><br /><span class="w">생명을</span> <span class="w">살리는</span> <span class="w">교회</span></h1>
-      <p class="sub">{church.name}는 개척 이래 40여 년, 한 자리에서 지역과 민족과 세계를 섬겨 왔습니다.</p>
+      <p class="sub">{church.name}는 {church.founded} 창립 이래, 한 자리에서 지역과 민족과 세계를 섬겨 왔습니다.</p>
       <div class="cta-row">
         <a class="btn white" href="#sermon">이번 주 말씀 보기</a>
         <a class="btn outline" href="#worship">예배 안내</a>
@@ -31,10 +37,10 @@ const fmtShort = (d: Date) =>
     </div>
     <div class="hero-bar">
       <div class="hero-bar-inner">
-        <div class="hb"><span class="k">주일예배</span><span class="v">오전 9:00 · 11:00</span></div>
-        <div class="hb"><span class="k">수요예배</span><span class="v">저녁 7:30</span></div>
+        <div class="hb"><span class="k">주일예배</span><span class="v">{sundaySummary}</span></div>
+        <div class="hb"><span class="k">수요기도회</span><span class="v">{wednesdayTime}</span></div>
         <div class="hb"><span class="k">Live</span><span class="v"><span class="live"></span>주일 11시 유튜브 중계</span></div>
-        <div class="hb"><span class="k">Where</span><span class="v">경기도 안양시</span></div>
+        <div class="hb"><span class="k">Where</span><span class="v">안양시 동안구 관양동</span></div>
       </div>
     </div>
   </header>
@@ -81,7 +87,7 @@ const fmtShort = (d: Date) =>
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="ov">Worship</span>
-        <h2>예배 안내</h2>
+        <h2>예배 및 모임 안내</h2>
       </div>
       <div class="worship-grid">
         <div class="reveal">
@@ -90,13 +96,29 @@ const fmtShort = (d: Date) =>
               <tr><th>{s.name}<small>{s.place}</small></th><td>{s.time}</td></tr>
             ))}
           </table>
-          <p class="wt-note">* 시간은 시안용 예시입니다. 실제 시간으로 교체됩니다.</p>
+          <div class="meeting-list">
+            <h3>정기 모임</h3>
+            <ul>
+              {church.meetings.map((meeting) => (
+                <li><span><strong>{meeting.name}</strong><small>{meeting.place}</small></span><b>{meeting.time}</b></li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div class="first-box reveal">
-          <h3>처음 오시는 분께</h3>
-          <p>어느 예배든 그냥 오시면 됩니다. 따로 준비할 것은 없고, 입구에서 안내위원이 자리를 안내해 드립니다.</p>
-          <p>아이와 함께 오시면 같은 시간 주일학교에서 함께 예배할 수 있습니다.</p>
-          <p class="muted">궁금한 점은 사무실({church.tel})로 전화 주세요.</p>
+        <div class="worship-side reveal">
+          <div class="school-box">
+            <h3>교회학교 주일예배</h3>
+            <table class="wt wt-small">
+              {church.churchSchool.map((s) => (
+                <tr><th>{s.name}<small>{s.place}</small></th><td>{s.time}</td></tr>
+              ))}
+            </table>
+          </div>
+          <div class="first-box">
+            <h3>처음 오시는 분께</h3>
+            <p>어느 예배든 그냥 오시면 됩니다. 따로 준비할 것은 없고, 입구에서 안내위원이 자리를 안내해 드립니다.</p>
+            <p class="muted">궁금한 점은 사무실({church.tel})로 전화 주세요.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -140,14 +162,18 @@ const fmtShort = (d: Date) =>
       <div class="visit-grid">
         <div class="reveal">
           <dl>
+            <dt>창립</dt><dd>{church.founded}</dd>
             <dt>주소</dt><dd>{church.address}</dd>
             <dt>전화</dt><dd>{church.tel}</dd>
-            <dt>주차</dt><dd>교회 주차장 이용 안내 문구</dd>
-            <dt>대중교통</dt><dd>지하철·버스 이용 안내 문구</dd>
+            <dt>팩스</dt><dd>{church.fax}</dd>
+            <dt>주차</dt><dd>교회 주차장 이용</dd>
           </dl>
           <p class="visit-call">방문 전에 연락 주시면 주차와 자리를 미리 안내해 드립니다. <strong>{church.tel}</strong></p>
         </div>
-        <div class="map-ph reveal">MAP — 카카오맵 연동</div>
+        <a class="map-ph reveal" href={mapUrl} target="_blank" rel="noopener">
+          <strong>카카오맵에서 위치 보기</strong>
+          <small>{church.address}</small>
+        </a>
       </div>
     </div>
   </section>
@@ -157,7 +183,7 @@ const fmtShort = (d: Date) =>
       <div class="final-inner">
         <div>
           <h2>이번 주일에<br />뵙겠습니다</h2>
-          <p class="t">주일 오전 9:00 · 11:00 — 오시기 어려우면 유튜브로 함께하세요.</p>
+          <p class="t">주일 {sundaySummary} — 오시기 어려우면 유튜브로 함께하세요.</p>
         </div>
         <a class="btn white" href="#visit">오시는 길</a>
       </div>
