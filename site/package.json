@@ -10,6 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "draw:test": "node --test scripts/lucky-draw.test.mjs",
+    "draw:serve": "node scripts/serve-lucky-draw.mjs",
     "youtube:test": "node --test scripts/youtube-parser.test.mjs",
     "youtube:check": "node scripts/sync-youtube.mjs",
     "youtube:check:gemini": "node scripts/sync-youtube.mjs --gemini",

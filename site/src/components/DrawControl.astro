@@ -1,0 +1,76 @@
+---
+import Draw from '../layouts/Draw.astro';
+import { church } from '../data/church';
+const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
+const modes = [['ticket','티켓'],['number','숫자'],['ball','공'],['grid','격자'],['drum','드럼']];
+---
+<Draw>
+  <a class="skip-link" href="#draw-console">추첨 화면으로 바로가기</a>
+  <div class="control-shell">
+    <header class="control-header">
+      <a class="event-brand" href={root} aria-label="행운권 추첨 첫 화면">
+        <img src={`${root}logo.png`} alt="" width="56" height="36" />
+        <span>{church.name}</span>
+      </a>
+      <nav class="control-nav" aria-label="추첨 메뉴">
+        <a href="#settings-panel">설정</a><a href="#history-panel">기록</a>
+        <button id="help" class="text-button">사용 안내</button>
+        <button id="open-stage" class="button outline">무대 창 열기 <span aria-hidden="true">↗</span></button>
+      </nav>
+    </header>
+    <main>
+      <div class="control-heading">
+        <h1>행운권 추첨</h1>
+        <p class="pool-summary">남은 번호 <strong id="remaining">200</strong><span>/ <span id="range-total">200</span></span><i></i><span class="confirmed-summary">당첨 <b id="winner-count">0</b>개</span><span class="excluded-summary">· 제외 <b id="excluded-count">0</b>개</span></p>
+      </div>
+      <p id="notice" class="notice" role="status" hidden></p>
+      <section class="main-console" id="draw-console" aria-label="추첨 진행" tabindex="-1">
+        <div class="mode-bar">
+          <div class="mode-list" role="group" aria-label="추첨 방식">
+            <span class="mode-label">추첨 방식</span>
+            {modes.map(([id,name],index) => <button class="mode-button" data-mode={id} aria-pressed={id === 'ticket'} title={`단축키 ${index+1}`}>{name}</button>)}
+          </div>
+          <p id="mode-description" class="mode-description">티켓을 섞은 뒤 한 장씩 펼칩니다</p>
+        </div>
+        <div class="preview-wrap"><iframe src={`${root}stage/?preview=1`} title="추첨 화면" tabindex="-1"></iframe></div>
+        <div class="draw-desk">
+          <div class="draw-status"><div><span id="round-label">1회 추첨</span><strong id="draw-description" role="status" aria-live="polite">5명을 추첨합니다.</strong></div><p id="draw-hint">당첨 확정한 번호는 다음 추첨에서 제외됩니다.</p></div>
+          <div class="draw-actions">
+            <label class="sound-switch"><input id="sound" type="checkbox" /><span class="switch-track" aria-hidden="true"></span> 효과음</label>
+            <button id="draw" class="button primary draw-button" disabled>추첨 시작 <kbd>Space</kbd></button>
+            <div class="resolve-actions" id="resolve-actions" hidden><button id="confirm" class="button primary" disabled>당첨 확정 <kbd>Enter</kbd></button><button id="reroll" class="button outline" disabled>다시 추첨</button></div>
+          </div>
+        </div>
+        <div class="utility-row"><div class="view-actions" role="group" aria-label="무대 화면 전환"><button id="show-idle" class="text-button" aria-pressed="true">처음 화면</button><button id="show-all" class="text-button" aria-pressed="false">전체 당첨 번호</button><button id="show-end" class="text-button" aria-pressed="false">마침 화면</button></div><div class="connection"><span id="stage-status">이 화면에서 바로 추첨할 수 있습니다</span><span id="offline-status">오프라인 준비 확인 중</span></div></div>
+      </section>
+      <div class="records-grid">
+        <details class="settings-panel" id="settings-panel">
+          <summary><span>추첨 설정</span><span class="summary-description">번호 구간 · 인원 · 제외</span></summary>
+          <form id="settings"><fieldset id="settings-fields">
+            <div class="range-setting"><p>행운권 번호 구간</p><div class="range-inputs"><label for="range-start">시작 번호<input id="range-start" name="rangeStart" type="number" min="1" max="9999" step="1" value="1" inputmode="numeric" required aria-describedby="range-hint" /></label><span aria-hidden="true">~</span><label for="range-end">끝 번호<input id="range-end" name="rangeEnd" type="number" min="1" max="9999" step="1" value="200" inputmode="numeric" required aria-describedby="range-hint" /></label></div><p id="range-hint">1부터 9999까지 설정할 수 있습니다. 이전 당첨 번호는 계속 제외됩니다.</p></div>
+            <label class="setting-row" for="batch">한 번에 추첨할 인원<select id="batch" name="batch">{[1,2,3,4,5].map(n => <option value={n} selected={n === 5}>{n}명</option>)}</select></label>
+            <label class="exclude-label" for="excluded">배부하지 않은 번호 · 무효 번호</label>
+            <textarea id="excluded" name="excluded" rows="2" placeholder="예: 13, 57, 88, 100-110" aria-describedby="exclude-hint"></textarea>
+            <p id="exclude-hint">쉼표나 공백으로 구분해 주세요. 범위도 입력할 수 있습니다.</p>
+            <button class="button outline save-settings" type="submit">설정 적용</button>
+          </fieldset></form>
+        </details>
+        <details class="history-panel" id="history-panel">
+          <summary><span>추첨 기록 <span id="history-count">0회</span></span><span class="summary-description">이전 결과 확인</span></summary>
+          <div class="history-tools"><p>기록은 이 브라우저에 저장됩니다.</p><button id="export" class="text-button">기록 내려받기 ↓</button></div>
+          <div id="history" class="history-list"><div class="empty-history"><p>아직 추첨 기록이 없습니다.</p><small>당첨을 확정하면 이곳에 기록됩니다.</small></div></div>
+        </details>
+      </div>
+    </main>
+    <footer class="control-footer"><span>{church.name}</span><div><button id="help-mobile" class="text-button">사용 안내</button><button id="appearance" class="text-button">어두운 화면</button><button id="reset" class="text-button reset-button">전체 초기화</button></div></footer>
+  </div>
+  <dialog id="action-dialog"><form method="dialog"><h2 id="dialog-title"></h2><p id="dialog-message"></p><label id="reset-label" hidden>계속하려면 ‘초기화’를 입력해 주세요.<input id="reset-word" autocomplete="off" /></label><div class="dialog-actions"><button value="cancel" class="button outline" autofocus>취소</button><button id="dialog-accept" value="accept" class="button primary">계속</button></div></form></dialog>
+  <dialog id="help-dialog"><div class="help-content"><h2>추첨 진행 안내</h2><ol>
+    <li>추첨 설정에서 시작 번호와 끝 번호, 추첨 인원을 입력해 주세요. 배부하지 않은 번호는 제외 번호에 입력합니다.</li>
+    <li><kbd>Space</kbd> 또는 ‘추첨 시작’을 누릅니다. 번호가 모두 공개되면 <kbd>Enter</kbd>로 당첨을 확정합니다.</li>
+    <li>프로젝터를 쓸 때는 Windows 디스플레이를 <strong>확장</strong>으로 설정하고, ‘무대 창 열기’로 연 창을 프로젝터로 옮깁니다. 무대 창에서 <kbd>F</kbd> 또는 더블클릭으로 전체화면을 켭니다.</li>
+    <li>두 창은 같은 브라우저와 같은 주소에서 연결됩니다. 효과음은 이 운영 창에서 재생됩니다.</li>
+    <li>‘오프라인 준비 완료’가 표시되면 인터넷 연결이 끊겨도 사용할 수 있습니다. 기록은 새로고침해도 복구됩니다.</li>
+    <li>행사가 끝나면 기록에서 CSV 파일을 내려받아 보관하세요.</li>
+  </ol><div class="help-update"><a href={`${root}update/`}>새 화면 적용</a></div><form method="dialog"><button class="button primary">확인</button></form></div></dialog>
+</Draw>

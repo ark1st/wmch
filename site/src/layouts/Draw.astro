@@ -1,0 +1,31 @@
+---
+import { church } from '../data/church';
+interface Props { stage?: boolean }
+const { stage = false } = Astro.props;
+const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#24483d" />
+    <meta name="description" content="세계선교교회 행운권 추첨. 번호 구간을 정하고 중복 없이 추첨하며 결과를 기록합니다." />
+    <meta name="robots" content="noindex" />
+    <title>{church.name} · 행운권 추첨{stage ? ' 무대' : ''}</title>
+    <link rel="icon" type="image/png" href={`${root}logo.png`} />
+    <link rel="stylesheet" href={`${root}app.css`} />
+    <link rel="preload" href={`${root}fonts/SUIT-Variable.woff2`} as="font" type="font/woff2" crossorigin />
+    {!stage && <script is:inline>
+      try {
+        const saved = localStorage.getItem('wmch-draw-appearance');
+        document.documentElement.dataset.theme = saved === 'light' || saved === 'dark' ? saved : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      } catch { document.documentElement.dataset.theme = 'light'; }
+    </script>}
+  </head>
+  <body class={stage ? 'draw-stage' : 'draw-control'} data-root={root} data-dev={import.meta.env.DEV ? 'true' : 'false'}>
+    <slot />
+    <noscript>행운권 추첨을 사용하려면 브라우저의 JavaScript를 켜 주세요.</noscript>
+    <script is:inline type="module" src={`${root}${stage ? 'stage' : 'control'}.mjs`}></script>
+  </body>
+</html>

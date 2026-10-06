@@ -1,0 +1,19 @@
+---
+import Draw from '../../layouts/Draw.astro';
+import { church } from '../../data/church';
+const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
+---
+<Draw stage>
+  <main class="stage-frame" id="stage" data-view="idle">
+    <div class="stage-backdrop" aria-hidden="true"><img src={`${root}church-exterior.jpg`} alt="" width="800" height="533" fetchpriority="high" /></div>
+    <header class="stage-header"><div class="stage-brand"><img src={`${root}logo.png`} alt="" /><span>{church.name}</span></div></header>
+    <section id="intro" class="stage-intro">
+      <div class="intro-copy"><h1>행운권<br />추첨</h1><div class="intro-meta"><span>행운권 번호<b id="intro-range">001 - 200</b></span><span>이번 추첨<b id="intro-count">5명</b></span></div></div>
+    </section>
+    <section id="draw-scene" class="draw-scene" hidden><div class="scene-heading"><p id="scene-round">1회 추첨</p><h1 id="scene-title">추첨 중입니다</h1></div><div id="draw-art" class="draw-art" aria-hidden="true"></div><div id="winner-row" class="winner-row"></div><p id="scene-caption" class="scene-caption">잠시 후 번호가 공개됩니다</p></section>
+    <section id="all-scene" class="all-scene" hidden><h1>전체 당첨 번호</h1><div id="all-numbers" class="all-numbers"></div><p id="all-page"></p></section>
+    <section id="end-scene" class="end-scene" hidden><h1>감사합니다.</h1><span>행운권 추첨을 마칩니다.</span></section>
+    <footer class="stage-footer"><span id="stage-footer-right">곧 추첨을 시작합니다</span></footer>
+    <p id="stage-error" class="stage-error" hidden>운영 화면에서 추첨 상태를 확인해 주세요.</p>
+  </main>
+</Draw>

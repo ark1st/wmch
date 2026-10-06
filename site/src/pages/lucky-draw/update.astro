@@ -1,0 +1,28 @@
+---
+const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
+---
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex" /><title>행운권 추첨 업데이트</title>
+<style>body{margin:0;background:#f5f5f1;color:#253a2e;font:16px/1.7 system-ui,sans-serif}main{max-width:440px;margin:14vh auto;padding:28px}h1{font-size:26px;font-weight:600}p{color:#61705c}button,a{font:inherit}button{background:#24553f;color:white;border:0;border-radius:5px;padding:12px 22px;cursor:pointer}button:disabled{opacity:.6}a{display:inline-block;margin-left:20px;color:#24553f}#status{font-size:14px}</style></head>
+<body><main><h1>새 화면 적용</h1><p>열려 있는 추첨 화면과 무대 창을 새 버전으로 다시 엽니다. 추첨 기록과 현재 당첨 번호는 그대로 유지됩니다.</p><button id="apply-update" data-root={root}>새 화면 적용</button><a href={root}>돌아가기</a><p id="status" role="status"></p></main>
+<script is:inline>
+  const button = document.getElementById('apply-update'), status = document.getElementById('status');
+  button.addEventListener('click',async()=>{
+    button.disabled=true; status.textContent='새 화면을 준비하고 있습니다.';
+    try {
+      const root=button.dataset.root;
+      const registration=await navigator.serviceWorker.register(`${root}sw.js`,{scope:root});
+      await registration.update();
+      if(registration.installing) await new Promise((resolve,reject)=>{
+        const worker=registration.installing;
+        const timeout=setTimeout(()=>reject(new Error('파일 준비가 늦어지고 있습니다. 잠시 후 다시 시도해 주세요.')),20000);
+        const check=()=>{if(worker.state==='installed'||worker.state==='activated'){clearTimeout(timeout);resolve();}else if(worker.state==='redundant'){clearTimeout(timeout);reject(new Error('새 파일을 받지 못했습니다. 인터넷 연결을 확인해 주세요.'));}};
+        worker.addEventListener('statechange',check); check();
+      });
+      if(registration.waiting) {
+        status.textContent='추첨 기록을 유지하며 화면을 다시 엽니다.';
+        registration.waiting.postMessage({type:'APPLY_UPDATE'});
+      } else location.replace(root);
+    } catch(error) {status.textContent=error.message;button.disabled=false;}
+  });
+</script></body></html>
