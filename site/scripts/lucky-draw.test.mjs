@@ -98,12 +98,60 @@ test('damaged records fail closed instead of silently allowing repeat winners', 
 
 test('same entropy yields the same outcome for every presentation mode', () => {
   let expected;
-  for (const mode of MODES) {
+  for (const mode of ['random',...MODES]) {
     let i=0; const rng={getRandomValues(a){a[0]=++i*173;return a;},randomUUID:()=>mode};
     const state=transition({...initialState(),mode},{type:'draw'},10000,rng);
     expected ??= state.pending.numbers;
     assert.deepEqual(state.pending.numbers,expected);
   }
+});
+
+test('automatic rotation covers every mode once per cycle without boundary repeats', () => {
+  let state = {...initialState(),prizeTotal:200};
+  const modes = [];
+  assert.equal(state.mode,'random');
+  // At each new cycle, entropy would pick the previous mode if the boundary guard were missing.
+  let calls = 0;
+  const rng = {getRandomValues(a){a[0]=++calls%6 === 0 && !state.modeRotation.length ? Math.max(0,MODES.indexOf(modes.at(-1))) : 0;return a;},randomUUID:()=>`round-${modes.length}`};
+  for(let i=0;i<40;i++) {
+    state = transition(state,{type:'draw'},10000+i*4000,rng);
+    modes.push(state.pending.mode);
+    if(i) assert.notEqual(modes[i],modes[i-1]);
+    const restored = validateState(JSON.parse(JSON.stringify(state)));
+    assert.deepEqual(restored.pending,state.pending);
+    assert.deepEqual(restored.modeRotation,state.modeRotation);
+    state = transition(restored,{type:'confirm'},13000+i*4000,rng);
+  }
+  for(let i=0;i<modes.length;i+=MODES.length) assert.deepEqual([...modes.slice(i,i+MODES.length)].sort(),[...MODES].sort());
+});
+
+test('a legacy fixed-mode record enables random rotation but preserves its pending draw', () => {
+  const legacy = change({...initialState(),mode:'drum'},{type:'draw'},10000);
+  delete legacy.modeRotation;
+  const saved = structuredClone(legacy.pending);
+  const migrated = validateState(legacy);
+  assert.equal(migrated.mode,'random');
+  assert.deepEqual(migrated.pending,saved);
+  let state = change(migrated,{type:'confirm'},13000);
+  state = change(state,{type:'draw'},14000);
+  assert.notEqual(state.pending.mode,'drum');
+  assert(state.pending.numbers.every(n=>!saved.numbers.includes(n)));
+});
+
+test('manual mode remains fixed, returning to automatic avoids the last manual presentation', () => {
+  let state = change(initialState(),{type:'mode',mode:'envelope'});
+  for(let i=0;i<2;i++) {
+    state=change(state,{type:'draw'},10000+i*4000);
+    assert.equal(state.pending.mode,'envelope');
+    assert.throws(()=>change(state,{type:'mode',mode:'random'}),/먼저 확정/);
+    state=change(state,{type:'confirm'},13000+i*4000);
+  }
+  state=change(state,{type:'mode',mode:'random'});
+  state=change(state,{type:'draw'},20000);
+  assert.notEqual(state.pending.mode,'envelope');
+  assert.throws(()=>validateState({...state,modeRotation:['ticket','ticket']}));
+  assert.throws(()=>validateState({...state,modeRotation:['unknown']}));
+  assert.throws(()=>validateState({...state,pending:{...state.pending,mode:'random'}}));
 });
 
 test('new draws finish in three seconds with all reveals before confirmation', () => {

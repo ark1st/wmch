@@ -1,4 +1,16 @@
-export const MODES = ['ticket', 'number', 'ball', 'grid', 'drum'];
+export const MODE_INFO = {
+  ticket: {label:'티켓', description:'티켓을 섞은 뒤 한 장씩 펼칩니다'},
+  number: {label:'숫자', description:'돌아가는 숫자가 차례로 멈춥니다'},
+  ball: {label:'공', description:'번호가 적힌 공을 하나씩 뽑습니다'},
+  grid: {label:'격자', description:'번호판에서 당첨 번호를 찾습니다'},
+  drum: {label:'드럼', description:'드럼을 돌려 행운권을 꺼냅니다'},
+  flip: {label:'플립 보드', description:'접이식 번호판이 넘어가며 멈춥니다'},
+  envelope: {label:'봉투', description:'봉투를 열어 당첨 번호를 꺼냅니다'},
+  spotlight: {label:'스포트라이트', description:'빛이 모이면 번호가 드러납니다'},
+  orbit: {label:'궤도', description:'원을 따라 돌던 번호가 자리를 잡습니다'},
+  curtain: {label:'커튼', description:'커튼이 양옆으로 열리며 번호가 나타납니다'},
+};
+export const MODES = Object.keys(MODE_INFO);
 export const DURATION = 3000;
 export const MAX_TICKET = 9999;
 // Shared by the stage and audio. Old saved rounds keep their original timing.
@@ -16,7 +28,7 @@ export const defaultPrograms = () => [
   {id:'page-5',title:'귀빈, 대청부회장',batch:3,hosts:2,planned:6},
   {id:'other',title:'기타 사회자',batch:5,hosts:0,planned:10},
 ];
-export const initialState = () => ({ version: 2, revision: 0, mode: 'ticket', batch: 5, rangeStart:1, rangeEnd:200, prizeTotal:75, programs:defaultPrograms(), programId:'page-1', excluded: [], sound: false, pending: null, history: [], view: 'idle', shownId: null });
+export const initialState = () => ({ version: 2, revision: 0, mode: 'random', modeRotation:[], batch: 5, rangeStart:1, rangeEnd:200, prizeTotal:75, programs:defaultPrograms(), programId:'page-1', excluded: [], sound: false, pending: null, history: [], view: 'idle', shownId: null });
 export const validWinners = round => round.status === 'confirmed' ? round.numbers.filter(n => !(round.invalid ?? []).includes(n)) : [];
 export const winnerNumbers = (state, programId) => state.history.filter(r => programId === undefined || r.programId === programId).flatMap(validWinners);
 export const invalidNumbers = state => state.history.flatMap(r => r.invalid ?? []);
@@ -75,7 +87,10 @@ export function validateState(s) {
     s = {...s,version:2,programs:defaultPrograms(),programId:'page-1',prizeTotal:Math.max(75,(s.history ?? []).filter(r => r.status === 'confirmed').reduce((sum,r)=>sum+(r.numbers?.length ?? 0),0)+(s.pending?.numbers?.length ?? 0)),history:Array.isArray(s.history)?s.history.map(migrateRound):s.history,pending:migrateRound(s.pending)};
     s.programs[0].batch = s.batch;
   }
-  if (!s || s.version !== 2 || !Number.isSafeInteger(s.revision) || s.revision < 0 || !MODES.includes(s.mode) || !Number.isInteger(s.batch) || s.batch < 1 || s.batch > 5 || !validNumbers(s.excluded) || typeof s.sound !== 'boolean' || !Array.isArray(s.history) || !['idle','result','all','page','end'].includes(s.view)) fail();
+  // Enable automatic rotation for earlier clients without changing any saved round.
+  if (s?.version === 2 && !('modeRotation' in s) && MODES.includes(s.mode)) s = {...s,mode:'random',modeRotation:[]};
+  if (!s || s.version !== 2 || !Number.isSafeInteger(s.revision) || s.revision < 0 || !['random',...MODES].includes(s.mode) || !Number.isInteger(s.batch) || s.batch < 1 || s.batch > 5 || !validNumbers(s.excluded) || typeof s.sound !== 'boolean' || !Array.isArray(s.history) || !['idle','result','all','page','end'].includes(s.view)) fail();
+  if (!Array.isArray(s.modeRotation) || s.modeRotation.some(mode => !MODES.includes(mode)) || new Set(s.modeRotation).size !== s.modeRotation.length) fail();
   if (!validRange(s.rangeStart,s.rangeEnd) || s.excluded.some(n => n < s.rangeStart || n > s.rangeEnd)) fail();
   if (!Array.isArray(s.programs) || s.programs.length !== 6 || s.programs.some((p,i) => !p || p.id !== defaultPrograms()[i].id || typeof p.title !== 'string' || !p.title.trim() || p.title.length > 80 || !Number.isInteger(p.batch) || p.batch < 1 || p.batch > 5 || !Number.isInteger(p.hosts) || p.hosts < 0 || p.hosts > 99 || !Number.isInteger(p.planned) || p.planned < 0 || p.planned > MAX_TICKET)) fail();
   if (!currentProgram(s) || currentProgram(s).batch !== s.batch || !Number.isInteger(s.prizeTotal) || s.prizeTotal < 1 || s.prizeTotal > MAX_TICKET) fail();
@@ -122,7 +137,18 @@ export function transition(state, action, now = Date.now(), cryptoSource = globa
     const pool = candidates(s);
     if (!pool.length) throw new Error('추첨 가능한 번호가 모두 소진되었습니다.');
     if (!prizesRemaining(s)) throw new Error('모든 상품의 당첨자가 확정되었습니다.');
-    s.pending = { id: cryptoSource.randomUUID(), numbers: sample(pool, nextCount(s), cryptoSource), invalid:[], programId:s.programId, programTitle:currentProgram(s).title, noRepeat:true, mode: s.mode, rangeStart:s.rangeStart, rangeEnd:s.rangeEnd, startedAt: now, duration: action.reduced ? 1400 : DURATION };
+    // Sample winners first: the presentation choice cannot influence this outcome.
+    const id = cryptoSource.randomUUID(), numbers = sample(pool, nextCount(s), cryptoSource);
+    let mode = s.mode;
+    if (mode === 'random') {
+      if (!s.modeRotation.length) s.modeRotation = [...MODES];
+      const previous = s.history.at(-1)?.mode;
+      let available = s.modeRotation.filter(candidate => candidate !== previous);
+      if (!available.length) { s.modeRotation = [...MODES]; available = MODES.filter(candidate => candidate !== previous); }
+      mode = available[randomBelow(available.length,cryptoSource)];
+      s.modeRotation = s.modeRotation.filter(candidate => candidate !== mode);
+    }
+    s.pending = { id, numbers, invalid:[], programId:s.programId, programTitle:currentProgram(s).title, noRepeat:true, mode, rangeStart:s.rangeStart, rangeEnd:s.rangeEnd, startedAt: now, duration: action.reduced ? 1400 : DURATION };
     s.view = 'result'; s.shownId = null;
   };
   switch (action.type) {
@@ -167,7 +193,7 @@ export function transition(state, action, now = Date.now(), cryptoSource = globa
       s.prizeTotal = Number(action.prizeTotal ?? s.prizeTotal);
       if (!Number.isInteger(s.prizeTotal) || s.prizeTotal < Math.max(1,winnerNumbers(s).length) || s.prizeTotal > MAX_TICKET) throw new Error('전체 상품 수는 유효 당첨자 수 이상, 1–9999 사이로 입력해 주세요.');
       break;
-    case 'mode': idle(); s.mode = action.mode; break;
+    case 'mode': idle(); if (s.mode !== action.mode) s.modeRotation = []; s.mode = action.mode; break;
     case 'sound': s.sound = Boolean(action.value); break;
     case 'view':
       idle(); s.view = action.view; s.shownId = action.id ?? s.shownId;

@@ -1,4 +1,4 @@
-import { candidates, MODES, pad, currentProgram, winnerNumbers, invalidNumbers, validWinners, prizesRemaining, nextCount } from './core.mjs';
+import { candidates, MODE_INFO, pad, currentProgram, winnerNumbers, invalidNumbers, validWinners, prizesRemaining, nextCount } from './core.mjs';
 import { KEY, read, dispatch, subscribe, onStagePing, resetDamaged } from './store.mjs';
 import { unlockAudio, stopAudio, playDraw } from './audio.mjs';
 const $ = id => document.getElementById(id);
@@ -7,7 +7,6 @@ const root = document.body.dataset.root;
 let state, lastRevision = -1, stageLastSeen = 0, working = false, damaged = false, dialogSnapshot = null, stageWindow;
 let programSignature = '', reviewId = null;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-const modeDescriptions = {ticket:'티켓을 섞은 뒤 한 장씩 펼칩니다',number:'돌아가는 숫자가 차례로 멈춥니다',ball:'번호가 적힌 공을 하나씩 뽑습니다',grid:'번호판에서 당첨 번호를 찾습니다',drum:'드럼을 돌려 행운권을 꺼냅니다'};
 function notify(message) { $('notice').textContent = message; $('notice').hidden = !message; }
 function load() {
   try { state = read(); damaged = false; render(); }
@@ -25,9 +24,12 @@ function render() {
   $('excluded-count').textContent = state.excluded.filter(n => !confirmedNumbers.has(n)).length;
   $('history-count').textContent = `${winners.length}회`;
   $('sound').checked = state.sound;
-  $('mode-description').textContent = modeDescriptions[state.mode];
+  $('draw-mode').value = state.mode;
+  $('draw-mode').disabled = !!state.pending || working;
+  $('mode-description').textContent = state.mode === 'random' ? '10가지를 고루 섞고, 같은 연출은 연달아 나오지 않습니다' : MODE_INFO[state.mode].description;
+  const lastMode = state.pending?.mode ?? state.history.at(-1)?.mode;
+  $('current-mode').textContent = lastMode ? `${state.pending ? '이번' : '직전'} 연출 · ${MODE_INFO[lastMode].label}` : '3초 안에 번호 공개';
   for (const view of ['idle','page','all','end']) $(`show-${view}`).setAttribute('aria-pressed', String(!state.pending && state.view === view));
-  document.querySelectorAll('[data-mode]').forEach(el => { el.setAttribute('aria-pressed', String(el.dataset.mode === state.mode)); el.disabled = !!state.pending || working; });
   $('settings-fields').disabled = !!state.pending || working;
   $('program-fields').disabled = !!state.pending || working;
   for (const id of ['show-idle','show-page','show-all','show-end']) $(id).disabled = !!state.pending || working;
@@ -222,7 +224,7 @@ $('appearance').addEventListener('click', () => {
 renderAppearance();
 document.querySelectorAll('.control-nav a[href^="#"]').forEach(link => link.addEventListener('click', () => { document.querySelector(link.hash).open = true; }));
 for (const view of ['idle','page','all','end']) $(`show-${view}`).addEventListener('click', () => act({ type:'view', view }));
-document.querySelectorAll('[data-mode]').forEach(el => el.addEventListener('click', () => act({ type:'mode', mode:el.dataset.mode })));
+$('draw-mode').addEventListener('change', () => act({type:'mode',mode:$('draw-mode').value}));
 $('settings').addEventListener('submit', e => { e.preventDefault(); act({type:'settings', prizeTotal:$('prize-total-input').value, batch:$('batch').value, excluded:$('excluded').value, rangeStart:$('range-start').value, rangeEnd:$('range-end').value}); });
 $('program-editor').addEventListener('input', e => {
   if (['batch','hosts'].includes(e.target.dataset.field)) {
@@ -264,10 +266,9 @@ $('export').addEventListener('click', () => { try { download(); } catch (e) { no
 document.addEventListener('keydown', e => {
   if (e.repeat || e.altKey || e.ctrlKey || e.metaKey || e.target.closest('input,textarea,select,button,a,summary,[contenteditable=true]') || document.querySelector('dialog[open]')) return;
   const key = e.key.toLowerCase();
-  if ([' ','enter','f',...MODES.map((_,i) => String(i+1))].includes(key)) e.preventDefault();
+  if ([' ','enter','f'].includes(key)) e.preventDefault();
   if (key === ' ' && !$('draw').disabled && !state.pending) act({type:'draw'});
   if (key === 'enter' && !$('confirm').disabled) act({type:'confirm'});
-  if (/^[1-5]$/.test(key) && !state.pending) act({type:'mode',mode:MODES[Number(key)-1]});
   if (key === 'f') {
     (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()).catch(() => notify('전체화면을 켤 수 없습니다. 브라우저의 F11을 사용해 주세요.'));
   }

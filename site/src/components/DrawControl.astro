@@ -1,8 +1,8 @@
 ---
 import Draw from '../layouts/Draw.astro';
 import { church } from '../data/church';
+import { MODE_INFO } from '../../public/lucky-draw/core.mjs';
 const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
-const modes = [['ticket','티켓'],['number','숫자'],['ball','공'],['grid','격자'],['drum','드럼']];
 ---
 <Draw>
   <a class="skip-link" href="#draw-console">추첨 화면으로 바로가기</a>
@@ -30,11 +30,9 @@ const modes = [['ticket','티켓'],['number','숫자'],['ball','공'],['grid','�
       </section>
       <section class="main-console" id="draw-console" aria-label="추첨 진행" tabindex="-1">
         <div class="mode-bar">
-          <div class="mode-list" role="group" aria-label="추첨 방식">
-            <span class="mode-label">추첨 방식</span>
-            {modes.map(([id,name],index) => <button class="mode-button" data-mode={id} aria-pressed={id === 'ticket'} title={`단축키 ${index+1}`}>{name}</button>)}
-          </div>
-          <p id="mode-description" class="mode-description">티켓을 섞은 뒤 한 장씩 펼칩니다</p>
+          <div class="mode-choice"><label for="draw-mode">추첨 연출</label><select id="draw-mode" aria-label="추첨 연출" aria-describedby="mode-description"><option value="random">자동 랜덤 · 10가지</option><optgroup label="한 가지 연출로 고정">{Object.entries(MODE_INFO).map(([id,info]) => <option value={id}>{info.label}</option>)}</optgroup></select></div>
+          <p id="mode-description" class="mode-description">10가지 연출이 매번 새로운 순서로 이어집니다</p>
+          <span id="current-mode" class="current-mode" aria-live="polite">같은 연출 연속 없음</span>
         </div>
         <div class="preview-wrap"><iframe src={`${root}stage/?preview=1`} title="추첨 화면" tabindex="-1"></iframe></div>
         <div class="draw-desk">
@@ -77,6 +75,7 @@ const modes = [['ticket','티켓'],['number','숫자'],['ball','공'],['grid','�
   <dialog id="help-dialog"><div class="help-content"><h2>추첨 진행 안내</h2><ol>
     <li>진행 페이지를 선택하면 해당 페이지의 추첨 인원(5명 또는 3명)이 적용됩니다. ‘진행표 수정’에서 진행자와 인원·예정 수량을 바꿀 수 있습니다.</li>
     <li>추첨 설정에서 전체 상품 수와 행운권 번호 구간을 입력해 주세요. 미리 제외할 번호도 설정할 수 있습니다.</li>
+    <li>추첨 연출은 기본 ‘자동 랜덤’입니다. 10가지를 한 번씩 섞어 보여 주고, 같은 연출은 연달아 나오지 않습니다. 선택 메뉴에서 원하는 연출 하나로 고정할 수도 있습니다.</li>
     <li><kbd>Space</kbd> 또는 ‘추첨 시작’을 누릅니다. 번호가 모두 공개되면 무효인 번호만 누른 뒤 ‘결과 확정’ 또는 <kbd>Enter</kbd>를 누릅니다.</li>
     <li>유효 4명·무효 1명이면 상품은 4개만 차감됩니다. 다음 회차는 평소 인원대로 추첨하며, 남은 상품이 3개일 때만 3명을 뽑습니다. 무효 번호도 다시 나오지 않으며 별도 보충 재추첨은 없습니다.</li>
     <li>프로젝터를 쓸 때는 Windows 디스플레이를 <strong>확장</strong>으로 설정하고, ‘무대 창 열기’로 연 창을 프로젝터로 옮깁니다. 무대 창에서 <kbd>F</kbd> 또는 더블클릭으로 전체화면을 켭니다.</li>

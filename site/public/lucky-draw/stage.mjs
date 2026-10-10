@@ -36,6 +36,7 @@ function render() {
   if (view === 'all' || view === 'page') { summaryStart = Date.now(); lastStep = -1; renderAll(); }
   if (view !== 'result' || !round) return;
   $('draw-scene').className = `draw-scene mode-${round.mode}`;
+  $('draw-scene').style.setProperty('--phase',`${-Math.max(0,Date.now()-round.startedAt)}ms`);
   const confirmed = state.history.filter(r => r.status === 'confirmed');
   const index = state.pending ? confirmed.length + 1 : confirmed.findIndex(r => r.id === round.id) + 1;
   $('scene-round').textContent = `${round.programTitle} · ${index}회 추첨 · ${round.numbers.length}명`;
@@ -43,6 +44,8 @@ function render() {
   cards = round.numbers.map((_, i) => {
     const card = element('div', 'winner-card sealed');
     card.append(element('small', '', '당첨 번호'), element('strong', '', '?'), element('span', 'ticket-bottom', '행운권'), element('span','invalid-label','무효'));
+    if (round.mode === 'envelope') card.append(element('span','envelope-front'),element('span','envelope-flap'));
+    if (round.mode === 'curtain') card.append(element('span','curtain-panel curtain-left'),element('span','curtain-panel curtain-right'));
     card.setAttribute('aria-label', `${i + 1}번째 번호 공개 대기`);
     $('winner-row').append(card); return card;
   });
@@ -81,6 +84,17 @@ function createArt(mode) {
       ticket.style.setProperty('--i', i); ticket.style.setProperty('--x', `${8 + i * 19 % 65}%`); ticket.style.setProperty('--y', `${18 + i % 3 * 20}%`); cage.append(ticket);
     }
     stand.append(cage); art.append(stand);
+  } else if (mode === 'spotlight') {
+    for (let i=0;i<3;i++) {
+      const beam = element('span','spotlight-beam'); beam.style.setProperty('--i',i); art.append(beam);
+    }
+  } else if (mode === 'orbit') {
+    const orbit = element('div','number-orbit');
+    for (let i=0;i<10;i++) {
+      const node = element('span','orbit-node',pad(pool[(i*17)%pool.length] ?? 1));
+      node.style.setProperty('--angle',`${i*36}deg`); orbit.append(node);
+    }
+    orbit.append(element('span','orbit-center','행운권')); art.append(orbit);
   }
 }
 function setGridPage(page) {
@@ -111,10 +125,10 @@ function tick() {
   $('draw-scene').classList.toggle('is-finished', finished);
   $('scene-title').textContent = finished ? (r.invalid.length === r.numbers.length ? '추첨 결과' : '축하합니다') : '추첨 중입니다';
   $('scene-caption').textContent = finished ? `유효 ${r.numbers.length-r.invalid.length}명${r.invalid.length ? ` · 무효 ${r.invalid.length}명` : ''}${state.pending ? ' · 번호를 확인해 주세요.' : ' · 당첨 확정'}` : '잠시 후 번호가 공개됩니다';
-  $('draw-art').classList.toggle('vanish', short || elapsed >= (r.mode === 'grid' ? timing.gridExit : timing.artExit));
+  $('draw-art').classList.toggle('vanish', short || elapsed >= (r.mode === 'grid' ? timing.gridExit : r.mode === 'spotlight' ? r.duration : timing.artExit));
   cards.forEach((card, i) => {
     const revealed = finished || i < revealCount;
-    const visible = r.mode === 'grid' && !short ? elapsed >= timing.gridExit : (r.mode === 'ball' || r.mode === 'drum') && !short ? revealed : short || r.mode === 'number' || elapsed >= timing.cardsEnter + i * timing.cardStagger;
+    const visible = r.mode === 'grid' && !short ? elapsed >= timing.gridExit : (r.mode === 'ball' || r.mode === 'drum') && !short ? revealed : short || ['number','flip','envelope','curtain'].includes(r.mode) || elapsed >= timing.cardsEnter + i * timing.cardStagger;
     card.classList.toggle('ready', visible);
     const invalid = r.invalid.includes(r.numbers[i]);
     card.classList.toggle('is-invalid', revealed && invalid);
@@ -130,7 +144,7 @@ function tick() {
   if (step === lastStep || short || finished) return;
   lastStep = step;
   // Decorative sequence only. Winner selection happens exclusively in core.mjs.
-  if (r.mode === 'number') cards.forEach((card, i) => {
+  if (r.mode === 'number' || r.mode === 'flip') cards.forEach((card, i) => {
     if (card.classList.contains('sealed')) card.querySelector('strong').textContent = pad(pool[(step * 37 + i * 53) % pool.length] ?? 1);
   });
   if (r.mode === 'grid') {
