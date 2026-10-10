@@ -75,6 +75,77 @@ kbd { font-family:inherit; font-size:10px; border:1px solid currentColor; border
 .pool-summary b { font-weight:600; color:var(--ink) }
 .pool-summary i { height:13px; border-left:1px solid var(--line); margin:0 10px }
 .main-console { background:var(--surface); border:1px solid var(--line); border-radius:8px }
+.program-section { margin:0 0 22px }
+.program-nav { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); border-bottom:1px solid var(--line); gap:5px }
+.program-tab { text-align:left; background:none; border:0; border-bottom:3px solid transparent; padding:13px 10px; min-width:0 }
+.program-tab span { display:block; font-size:11px; color:var(--muted); margin-bottom:7px }
+.program-tab strong { display:block; font-size:13px; font-weight:550; line-height:1.6; word-break:keep-all }
+.program-tab[aria-pressed=true] { border-bottom-color:var(--green); background:var(--soft) }
+.program-tab:hover:not(:disabled) { background:var(--soft) }
+.program-heading { display:flex; align-items:center; justify-content:space-between; gap:24px; padding-top:22px }
+.program-heading h2 { font-size:21px; font-weight:600; line-height:1.4 }
+.program-heading p { font-size:12px; color:var(--muted); margin:6px 0 }
+.prize-summary { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:flex-end; gap:12px 20px; font-size:12px; color:var(--muted) }
+.prize-summary b { font-size:20px; font-weight:550; color:var(--ink); margin-left:5px; font-variant-numeric:tabular-nums }
+.prize-summary strong { font-weight:500; color:var(--green); border-left:1px solid var(--line); padding-left:20px }
+.prize-summary strong b { font-size:28px; color:var(--green) }
+.pending-review { padding:20px 25px; border-top:1px solid var(--line); background:var(--paper) }
+.pending-review h3 { margin:0 0 7px; font-size:14px; font-weight:600 }
+.pending-review p,.form-hint { font-size:12px; line-height:1.7; color:var(--muted) }
+.review-numbers { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 12px }
+.number-choice { display:flex; align-items:center; gap:16px; padding:12px 18px; border:1px solid var(--line); border-radius:5px; background:var(--surface) }
+.number-choice strong { font-size:23px; font-weight:600; font-variant-numeric:tabular-nums }
+.number-choice span { font-size:12px }
+.number-choice[aria-pressed=true],.invalid-number { color:#a14b32; background:#faeee7; border-color:#c88c73 }
+.number-choice[aria-pressed=true] strong { text-decoration:line-through }
+:root[data-theme=dark] .number-choice[aria-pressed=true],:root[data-theme=dark] .invalid-number { color:#f4b7a0; background:#422b25; border-color:#a5705d }
+.page-results { padding:25px 0 22px }
+.page-results>div:first-child { display:flex; align-items:baseline; gap:16px; margin-bottom:13px }
+.page-results h2 { font-size:14px; font-weight:600 }
+#page-tally { color:var(--muted); font-size:12px }
+.page-numbers { display:flex; flex-wrap:wrap; gap:8px }
+.page-numbers>span { padding:7px 12px; border:1px solid var(--line); border-radius:3px; font-variant-numeric:tabular-nums; font-size:16px }
+.program-edit-row { display:grid; grid-template-columns:58px minmax(0,3fr) repeat(3,minmax(0,1fr)); align-items:end; gap:12px; padding:14px 0; border-bottom:1px solid var(--line) }
+.program-edit-index { font-size:12px; padding-bottom:13px; color:var(--muted) }
+.program-edit-row label { font-size:11px; color:var(--muted); min-width:0 }
+.program-edit-row input { display:block; margin-top:7px; width:100%; min-width:0; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:4px; padding:10px; font-size:14px }
+.program-settings-panel .button { margin:15px 0 20px }
+.program-settings-panel .form-hint { margin-top:12px }
+.setting-row input { width:105px; border:1px solid var(--line); background:var(--surface); border-radius:5px; padding:11px; font-variant-numeric:tabular-nums }
+.history-number { border:1px solid var(--line); border-radius:3px; background:var(--surface); padding:5px 8px; font-size:15px }
+.history-numbers { display:flex; flex-wrap:wrap; align-items:center; gap:6px }
+.history-valid-count { flex-basis:100%; font-size:11px; color:var(--muted); font-weight:400 }
+.invalid-panel { margin-top:24px; padding-bottom:20px }
+.invalid-panel .form-hint { margin-top:12px }
+.intro-program { font-size:clamp(15px,2.2vw,36px); color:var(--stage-muted); margin-bottom:2.4vh; max-width:40vw; text-wrap:balance }
+.winner-card.is-invalid { opacity:.58; filter:saturate(.1) }
+.winner-card.is-invalid strong { text-decoration:line-through; text-decoration-thickness:2px }
+.winner-card .invalid-label { display:none }
+.winner-card.is-invalid .invalid-label { display:block; position:absolute; bottom:12%; left:0; width:100%; text-align:center; font-size:clamp(12px,1.5vw,25px); font-weight:600 }
+.winner-card.is-invalid .ticket-bottom { visibility:hidden }
+.history-number.invalid-number { background:#faeee7; border-color:#c88c73 }
+@media(max-width:800px) {
+  .program-nav { grid-template-columns:repeat(3,minmax(0,1fr)) }
+  .program-heading { align-items:flex-start; flex-direction:column; gap:8px }
+  .prize-summary { justify-content:flex-start; gap:10px 16px }
+  .program-edit-row { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px }
+  .program-edit-index { grid-column:1/-1; padding:0 }
+  .program-edit-row label:first-of-type { grid-column:1/-1 }
+  .view-actions { flex-wrap:wrap }
+}
+@media(max-width:480px) {
+  .program-tab { padding:10px 6px }
+  .program-tab strong { font-size:11px }
+  .program-heading h2 { font-size:18px }
+  .prize-summary { gap:8px 12px }
+  .prize-summary b { font-size:18px; margin-left:2px }
+  .prize-summary strong { padding-left:10px }
+  .prize-summary strong b { font-size:22px }
+  .pending-review { padding:18px 14px }
+  .number-choice { padding:9px 12px; gap:10px }
+  .number-choice strong { font-size:20px }
+  .intro-program { font-size:3vw }
+}
 .mode-bar { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:64px; padding:10px 22px }
 .mode-list { display:flex; align-items:center; gap:5px }
 .mode-label { font-size:12px; color:var(--muted); margin-right:15px }

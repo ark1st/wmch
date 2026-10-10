@@ -1,4 +1,4 @@
-import { candidates, pad, drawTiming } from './core.mjs';
+import { candidates, pad, drawTiming, currentProgram, winnerNumbers, nextCount } from './core.mjs';
 import { read, subscribe, pingStage } from './store.mjs';
 const $ = id => document.getElementById(id);
 const preview = new URLSearchParams(location.search).has('preview');
@@ -19,29 +19,30 @@ function currentRound() { return state.pending ?? state.history.find(r => r.id =
 function render() {
   const round = currentRound();
   const view = state.pending ? 'result' : state.view;
-  const nextSignature = [view, round?.id, state.pending ? 'pending' : 'saved', state.history.length, state.excluded.join(','), state.batch, state.rangeStart, state.rangeEnd].join(':');
+  const nextSignature = [view, round?.id, state.pending ? 'pending' : 'saved', state.revision].join(':');
   const rangeLabel = `${pad(state.rangeStart)} - ${pad(state.rangeEnd)}`;
   $('intro-range').textContent = rangeLabel;
   $('stage-footer-right').textContent = view === 'idle' ? '곧 추첨을 시작합니다' : view === 'result' && round ? `행운권 ${pad(round.rangeStart ?? 1)} - ${pad(round.rangeEnd ?? 200)}` : view === 'all' ? '전체 추첨 기록' : `행운권 ${rangeLabel}`;
   $('stage').classList.toggle('wide-numbers', state.rangeEnd > 999 || (round?.numbers.some(n => n > 999) ?? false) || state.history.some(r => r.numbers.some(n => n > 999)));
-  $('intro-count').textContent = `${Math.min(state.batch, candidates(state).length)}명`;
+  $('intro-count').textContent = `${nextCount(state)}명`;
+  $('intro-program').textContent = currentProgram(state).title;
   if (nextSignature === signature) return;
   signature = nextSignature;
   settledRound = null;
   $('stage').dataset.view = view;
-  const target = { idle: 'intro', result: 'draw-scene', all: 'all-scene', end: 'end-scene' }[view];
+  const target = { idle: 'intro', result: 'draw-scene', all: 'all-scene', page:'all-scene', end: 'end-scene' }[view];
   sections.forEach(id => $(id).hidden = id !== target);
   $('stage').classList.toggle('is-reduced', reduced.matches || round?.duration === 1400);
-  if (view === 'all') { summaryStart = Date.now(); lastStep = -1; renderAll(); }
+  if (view === 'all' || view === 'page') { summaryStart = Date.now(); lastStep = -1; renderAll(); }
   if (view !== 'result' || !round) return;
   $('draw-scene').className = `draw-scene mode-${round.mode}`;
   const confirmed = state.history.filter(r => r.status === 'confirmed');
   const index = state.pending ? confirmed.length + 1 : confirmed.findIndex(r => r.id === round.id) + 1;
-  $('scene-round').textContent = `${index}회 추첨 · ${round.numbers.length}명`;
+  $('scene-round').textContent = `${round.programTitle} · ${index}회 추첨 · ${round.numbers.length}명`;
   $('winner-row').replaceChildren();
   cards = round.numbers.map((_, i) => {
     const card = element('div', 'winner-card sealed');
-    card.append(element('small', '', '당첨 번호'), element('strong', '', '?'), element('span', 'ticket-bottom', '행운권'));
+    card.append(element('small', '', '당첨 번호'), element('strong', '', '?'), element('span', 'ticket-bottom', '행운권'), element('span','invalid-label','무효'));
     card.setAttribute('aria-label', `${i + 1}번째 번호 공개 대기`);
     $('winner-row').append(card); return card;
   });
@@ -96,7 +97,7 @@ function setGridPage(page) {
 }
 function tick() {
   if (!state) return;
-  if (!state.pending && state.view === 'all') { renderAll(); return; }
+  if (!state.pending && ['all','page'].includes(state.view)) { renderAll(); return; }
   if (!state.pending && state.view !== 'result') return;
   const r = currentRound(); if (!r) return;
   const elapsed = state.pending ? Math.max(0, Date.now() - r.startedAt) : r.duration;
@@ -108,17 +109,21 @@ function tick() {
   const { revealStart, stagger } = timing;
   const revealCount = Math.min(r.numbers.length, Math.max(0, Math.floor((elapsed - revealStart) / stagger) + 1));
   $('draw-scene').classList.toggle('is-finished', finished);
-  $('scene-title').textContent = finished ? '축하합니다' : '추첨 중입니다';
-  $('scene-caption').textContent = finished ? '당첨 번호를 확인해 주세요.' : '잠시 후 번호가 공개됩니다';
+  $('scene-title').textContent = finished ? (r.invalid.length === r.numbers.length ? '추첨 결과' : '축하합니다') : '추첨 중입니다';
+  $('scene-caption').textContent = finished ? `유효 ${r.numbers.length-r.invalid.length}명${r.invalid.length ? ` · 무효 ${r.invalid.length}명` : ''}${state.pending ? ' · 번호를 확인해 주세요.' : ' · 당첨 확정'}` : '잠시 후 번호가 공개됩니다';
   $('draw-art').classList.toggle('vanish', short || elapsed >= (r.mode === 'grid' ? timing.gridExit : timing.artExit));
   cards.forEach((card, i) => {
     const revealed = finished || i < revealCount;
     const visible = r.mode === 'grid' && !short ? elapsed >= timing.gridExit : (r.mode === 'ball' || r.mode === 'drum') && !short ? revealed : short || r.mode === 'number' || elapsed >= timing.cardsEnter + i * timing.cardStagger;
     card.classList.toggle('ready', visible);
+    const invalid = r.invalid.includes(r.numbers[i]);
+    card.classList.toggle('is-invalid', revealed && invalid);
+    card.querySelector('small').textContent = invalid && revealed ? '무효 번호' : '당첨 번호';
+    card.querySelector('.ticket-bottom').textContent = invalid && revealed ? '무효' : '행운권';
     if (revealed && card.classList.contains('sealed')) {
       card.classList.remove('sealed'); card.classList.add('reveal');
       card.querySelector('strong').textContent = pad(r.numbers[i]);
-      card.setAttribute('aria-label', `당첨 번호 ${pad(r.numbers[i])}`);
+      card.setAttribute('aria-label', `${invalid ? '무효' : '당첨'} 번호 ${pad(r.numbers[i])}`);
     }
   });
   const step = Math.floor(elapsed / (elapsed < revealStart ? 60 : 110));
@@ -139,7 +144,8 @@ function tick() {
   }
 }
 function renderAll() {
-  const numbers = state.history.filter(r => r.status === 'confirmed').flatMap(r => r.numbers);
+  const numbers = winnerNumbers(state,state.view === 'page' ? state.programId : undefined);
+  $('all-title').textContent = state.view === 'page' ? currentProgram(state).title : '전체 당첨 번호';
   const pages = Math.max(1, Math.ceil(numbers.length / 40));
   const page = Math.floor((Date.now() - summaryStart) / 10000) % pages;
   if (lastStep === page) return;

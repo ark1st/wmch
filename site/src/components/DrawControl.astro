@@ -24,6 +24,10 @@ const modes = [['ticket','티켓'],['number','숫자'],['ball','공'],['grid','�
         <p class="pool-summary">남은 번호 <strong id="remaining">200</strong><span>/ <span id="range-total">200</span></span><i></i><span class="confirmed-summary">당첨 <b id="winner-count">0</b>개</span><span class="excluded-summary">· 제외 <b id="excluded-count">0</b>개</span></p>
       </div>
       <p id="notice" class="notice" role="status" hidden></p>
+      <section class="program-section" aria-label="행사 진행 페이지">
+        <nav id="program-nav" class="program-nav" aria-label="진행 페이지"></nav>
+        <div class="program-heading"><div><p id="program-position">1페이지</p><h2 id="program-title">목사님, 사모님, 선교사님</h2><p id="program-plan">5개 × 3인 · 예정 15개</p></div><div class="prize-summary" aria-live="polite"><span>전체 상품 <b id="prize-total">75</b></span><span>유효 당첨 <b id="valid-total">0</b></span><span>무효 <b id="invalid-total">0</b></span><strong>남은 상품 <b id="prize-remaining">75</b></strong></div></div>
+      </section>
       <section class="main-console" id="draw-console" aria-label="추첨 진행" tabindex="-1">
         <div class="mode-bar">
           <div class="mode-list" role="group" aria-label="추첨 방식">
@@ -38,20 +42,24 @@ const modes = [['ticket','티켓'],['number','숫자'],['ball','공'],['grid','�
           <div class="draw-actions">
             <label class="sound-switch"><input id="sound" type="checkbox" /><span class="switch-track" aria-hidden="true"></span> 효과음</label>
             <button id="draw" class="button primary draw-button" disabled>추첨 시작 <kbd>Space</kbd></button>
-            <div class="resolve-actions" id="resolve-actions" hidden><button id="confirm" class="button primary" disabled>당첨 확정 <kbd>Enter</kbd></button><button id="reroll" class="button outline" disabled>다시 추첨</button></div>
+            <div class="resolve-actions" id="resolve-actions" hidden><button id="confirm" class="button primary" disabled>결과 확정 <kbd>Enter</kbd></button></div>
           </div>
         </div>
-        <div class="utility-row"><div class="view-actions" role="group" aria-label="무대 화면 전환"><button id="show-idle" class="text-button" aria-pressed="true">처음 화면</button><button id="show-all" class="text-button" aria-pressed="false">전체 당첨 번호</button><button id="show-end" class="text-button" aria-pressed="false">마침 화면</button></div><div class="connection"><span id="stage-status">이 화면에서 바로 추첨할 수 있습니다</span><span id="offline-status">오프라인 준비 확인 중</span></div></div>
+        <section id="pending-review" class="pending-review" aria-label="이번 추첨 유효·무효 확인" hidden><div><h3>무효표 표시</h3><p>무효인 번호만 누른 뒤 결과를 확정해 주세요. 나온 번호는 모두 다음 추첨에서 제외됩니다.</p></div><div id="pending-numbers" class="review-numbers"></div><p id="pending-summary" role="status"></p></section>
+        <div class="utility-row"><div class="view-actions" role="group" aria-label="무대 화면 전환"><button id="show-idle" class="text-button" aria-pressed="true">처음 화면</button><button id="show-page" class="text-button" aria-pressed="false">이 페이지 번호</button><button id="show-all" class="text-button" aria-pressed="false">전체 당첨 번호</button><button id="show-end" class="text-button" aria-pressed="false">마침 화면</button></div><div class="connection"><span id="stage-status">이 화면에서 바로 추첨할 수 있습니다</span><span id="offline-status">오프라인 준비 확인 중</span></div></div>
       </section>
+      <section class="page-results" aria-label="현재 페이지 당첨 번호"><div><h2>이 페이지 당첨 번호</h2><span id="page-tally"></span></div><div id="page-numbers" class="page-numbers"></div></section>
+      <details id="program-settings-panel" class="program-settings-panel"><summary><span>진행표 수정</span><span class="summary-description">진행자 · 추첨 인원 · 예정 수량</span></summary><form id="program-settings"><fieldset id="program-fields"><div id="program-editor"></div><p id="plan-total" class="form-hint"></p><p class="form-hint">예정 수량은 진행 참고용입니다. 페이지는 직접 선택하며, 마지막 추첨 인원은 전체 남은 상품 수에 맞춰 줄어듭니다.</p><button class="button outline" type="submit">진행표 저장</button></fieldset></form></details>
       <div class="records-grid">
         <details class="settings-panel" id="settings-panel">
-          <summary><span>추첨 설정</span><span class="summary-description">번호 구간 · 인원 · 제외</span></summary>
+          <summary><span>추첨 설정</span><span class="summary-description">전체 상품 · 번호 구간 · 인원</span></summary>
           <form id="settings"><fieldset id="settings-fields">
+            <label class="setting-row" for="prize-total-input">전체 상품 수<input id="prize-total-input" type="number" min="1" max="9999" step="1" value="75" required /></label>
             <div class="range-setting"><p>행운권 번호 구간</p><div class="range-inputs"><label for="range-start">시작 번호<input id="range-start" name="rangeStart" type="number" min="1" max="9999" step="1" value="1" inputmode="numeric" required aria-describedby="range-hint" /></label><span aria-hidden="true">~</span><label for="range-end">끝 번호<input id="range-end" name="rangeEnd" type="number" min="1" max="9999" step="1" value="200" inputmode="numeric" required aria-describedby="range-hint" /></label></div><p id="range-hint">1부터 9999까지 설정할 수 있습니다. 이전 당첨 번호는 계속 제외됩니다.</p></div>
             <label class="setting-row" for="batch">한 번에 추첨할 인원<select id="batch" name="batch">{[1,2,3,4,5].map(n => <option value={n} selected={n === 5}>{n}명</option>)}</select></label>
-            <label class="exclude-label" for="excluded">배부하지 않은 번호 · 무효 번호</label>
+            <label class="exclude-label" for="excluded">미리 제외할 번호</label>
             <textarea id="excluded" name="excluded" rows="2" placeholder="예: 13, 57, 88, 100-110" aria-describedby="exclude-hint"></textarea>
-            <p id="exclude-hint">쉼표나 공백으로 구분해 주세요. 범위도 입력할 수 있습니다.</p>
+            <p id="exclude-hint">배부하지 않은 번호를 입력합니다. 이미 뽑힌 무효표는 추첨 결과에서 표시해 주세요.</p>
             <button class="button outline save-settings" type="submit">설정 적용</button>
           </fieldset></form>
         </details>
@@ -61,13 +69,16 @@ const modes = [['ticket','티켓'],['number','숫자'],['ball','공'],['grid','�
           <div id="history" class="history-list"><div class="empty-history"><p>아직 추첨 기록이 없습니다.</p><small>당첨을 확정하면 이곳에 기록됩니다.</small></div></div>
         </details>
       </div>
+      <details class="invalid-panel"><summary><span>무효표 목록</span><span id="invalid-count" class="summary-description">0개</span></summary><div id="invalid-list" class="page-numbers"></div><p class="form-hint">무효표는 상품 수에서 차감하지 않으며, 다시 나오지 않습니다. 기록에서 표시를 수정할 수 있습니다.</p></details>
     </main>
     <footer class="control-footer"><span>{church.name}</span><div><button id="help-mobile" class="text-button">사용 안내</button><button id="appearance" class="text-button">어두운 화면</button><button id="reset" class="text-button reset-button">전체 초기화</button></div></footer>
   </div>
   <dialog id="action-dialog"><form method="dialog"><h2 id="dialog-title"></h2><p id="dialog-message"></p><label id="reset-label" hidden>계속하려면 ‘초기화’를 입력해 주세요.<input id="reset-word" autocomplete="off" /></label><div class="dialog-actions"><button value="cancel" class="button outline" autofocus>취소</button><button id="dialog-accept" value="accept" class="button primary">계속</button></div></form></dialog>
   <dialog id="help-dialog"><div class="help-content"><h2>추첨 진행 안내</h2><ol>
-    <li>추첨 설정에서 시작 번호와 끝 번호, 추첨 인원을 입력해 주세요. 배부하지 않은 번호는 제외 번호에 입력합니다.</li>
-    <li><kbd>Space</kbd> 또는 ‘추첨 시작’을 누릅니다. 번호가 모두 공개되면 <kbd>Enter</kbd>로 당첨을 확정합니다.</li>
+    <li>진행 페이지를 선택하면 해당 페이지의 추첨 인원(5명 또는 3명)이 적용됩니다. ‘진행표 수정’에서 진행자와 인원·예정 수량을 바꿀 수 있습니다.</li>
+    <li>추첨 설정에서 전체 상품 수와 행운권 번호 구간을 입력해 주세요. 미리 제외할 번호도 설정할 수 있습니다.</li>
+    <li><kbd>Space</kbd> 또는 ‘추첨 시작’을 누릅니다. 번호가 모두 공개되면 무효인 번호만 누른 뒤 ‘결과 확정’ 또는 <kbd>Enter</kbd>를 누릅니다.</li>
+    <li>유효 4명·무효 1명이면 상품은 4개만 차감됩니다. 다음 회차는 평소 인원대로 추첨하며, 남은 상품이 3개일 때만 3명을 뽑습니다. 무효 번호도 다시 나오지 않으며 별도 보충 재추첨은 없습니다.</li>
     <li>프로젝터를 쓸 때는 Windows 디스플레이를 <strong>확장</strong>으로 설정하고, ‘무대 창 열기’로 연 창을 프로젝터로 옮깁니다. 무대 창에서 <kbd>F</kbd> 또는 더블클릭으로 전체화면을 켭니다.</li>
     <li>두 창은 같은 브라우저와 같은 주소에서 연결됩니다. 효과음은 이 운영 창에서 재생됩니다.</li>
     <li>‘오프라인 준비 완료’가 표시되면 인터넷 연결이 끊겨도 사용할 수 있습니다. 기록은 새로고침해도 복구됩니다.</li>

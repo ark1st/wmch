@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { webcrypto } from 'node:crypto';
-import { initialState, transition, validateState, candidates, parseExcluded, sample, randomBelow, MODES, DURATION, drawTiming } from '../public/lucky-draw/core.mjs';
+import { initialState, transition, validateState, candidates, parseExcluded, sample, randomBelow, MODES, DURATION, drawTiming, winnerNumbers, invalidNumbers, prizesRemaining, nextCount } from '../public/lucky-draw/core.mjs';
 const change = (state, action, time = 10000) => transition(state, action, time, webcrypto);
 
 test('all 200 tickets can win once, with no duplicates across 40 rounds', () => {
-  let state = initialState(); const drawn = [];
+  let state = {...initialState(),prizeTotal:200}; const drawn = [];
   for (let round = 0; round < 40; round++) {
     const time = 10000 + round * 10000;
     state = change(state, {type:'draw'}, time);
@@ -43,17 +43,25 @@ test('all modes use the same sampler and pending tickets stay eligible until con
   }
 });
 
-test('reroll preserves the discarded result and only excludes confirmed winners', () => {
+test('invalid tickets do not consume prizes and can never be drawn again', () => {
   let state = change(initialState(),{type:'draw'},10000);
   const first = structuredClone(state.pending);
-  state = change(state,{type:'reroll',pendingId:first.id},17000);
+  assert.throws(()=>change(state,{type:'reroll',pendingId:first.id},17000));
+  state = change(state,{type:'mark-invalid',number:first.numbers[0],invalid:true,pendingId:first.id},13000);
+  state = change(state,{type:'confirm',pendingId:first.id},13000);
   assert.deepEqual(state.history[0].numbers,first.numbers);
-  assert.equal(state.history[0].status,'discarded');
-  assert.equal(candidates(state).length,200);
+  assert.equal(state.history[0].status,'confirmed');
+  assert.equal(winnerNumbers(state).length,4);
+  assert.equal(prizesRemaining(state),71);
+  assert.equal(candidates(state).length,195);
+  state = change(state,{type:'draw'},17000);
+  assert.equal(state.pending.numbers.length,5);
+  assert(state.pending.numbers.every(n=>!first.numbers.includes(n)));
   assert.notEqual(state.pending.id,first.id);
   assert.throws(() => change(state,{type:'confirm',pendingId:first.id},24000),/변경/);
   state = change(state,{type:'confirm'},24000);
-  assert.equal(candidates(state).length,195);
+  assert.equal(winnerNumbers(state).length,9);
+  assert.equal(candidates(state).length,190);
 });
 
 test('persisted pending results resume unchanged; confirm is idempotently guarded', () => {
@@ -80,7 +88,7 @@ test('unbiased RNG rejects out-of-range uint32 and sampler does not modify pool'
 });
 
 test('damaged records fail closed instead of silently allowing repeat winners', () => {
-  assert.throws(() => validateState({...initialState(),version:2}));
+  assert.throws(() => validateState({...initialState(),version:3}));
   assert.throws(() => validateState({...initialState(),excluded:[201]}));
   let state=change(initialState(),{type:'draw'},10000);
   state=change(state,{type:'confirm'},17000);
@@ -163,13 +171,102 @@ test('changing ranges preserves past winners and exclusions remain range-bound',
 
 test('records without range fields migrate to 1-200 without losing the pending draw', () => {
   const legacy = change(initialState(),{type:'draw'},10000);
+  legacy.version = 1;
   delete legacy.rangeStart; delete legacy.rangeEnd;
   delete legacy.pending.rangeStart; delete legacy.pending.rangeEnd;
   legacy.pending.duration=6800;
   const migrated = validateState(JSON.parse(JSON.stringify(legacy)));
   assert.equal(migrated.rangeStart,1);
   assert.equal(migrated.rangeEnd,200);
-  assert.deepEqual(migrated.pending,legacy.pending);
+  assert.deepEqual(migrated.pending.numbers,legacy.pending.numbers);
+  assert.equal(migrated.version,2);
+  assert.deepEqual(migrated.pending.invalid,[]);
   assert.equal(change(migrated,{type:'confirm'},16800).history.length,1);
   assert.throws(()=>validateState({...legacy,rangeStart:1}));
+});
+
+test('75 prizes: invalid results keep normal batches, and only the final remainder reduces the batch', () => {
+  let state=initialState(), time=10000;
+  const seen=new Set();
+  const run=(invalidCount,expectedBatch)=>{
+    state=change(state,{type:'draw'},time);
+    assert.equal(state.pending.numbers.length,expectedBatch);
+    for(const n of state.pending.numbers){assert(!seen.has(n));seen.add(n);}
+    for(const n of state.pending.numbers.slice(0,invalidCount)) state=change(state,{type:'mark-invalid',number:n,invalid:true},time+DURATION);
+    state=change(state,{type:'confirm'},time+DURATION); time+=4000;
+  };
+  run(1,5); assert.equal(winnerNumbers(state).length,4);
+  run(0,5); assert.equal(winnerNumbers(state).length,9);
+  for(let i=0;i<12;i++) run(0,5);
+  assert.equal(winnerNumbers(state).length,69);
+  run(2,5); assert.equal(winnerNumbers(state).length,72);
+  assert.equal(prizesRemaining(state),3); assert.equal(nextCount(state),3);
+  run(0,3);
+  assert.equal(winnerNumbers(state).length,75); assert.equal(invalidNumbers(state).length,3);
+  assert.equal(seen.size,78); assert.equal(nextCount(state),0);
+  assert.throws(()=>change(state,{type:'draw'},time),/모든 상품/);
+});
+
+test('after 70 prizes, a five-number draw with two invalids leaves exactly two prizes', () => {
+  let state=initialState();
+  for(let i=0;i<14;i++){state=change(state,{type:'draw'},10000+i*4000);state=change(state,{type:'confirm'},13000+i*4000);}
+  state=change(state,{type:'draw'},70000);
+  for(const n of state.pending.numbers.slice(0,2)) state=change(state,{type:'mark-invalid',number:n,invalid:true},73000);
+  state=change(state,{type:'confirm'},73000);
+  assert.equal(winnerNumbers(state).length,73); assert.equal(prizesRemaining(state),2);
+  state=change(state,{type:'draw'},74000); assert.equal(state.pending.numbers.length,2);
+});
+
+test('all-invalid rounds persist, exclude every number, and do not trigger a replacement draw', () => {
+  let state=change(initialState(),{type:'draw'},10000); const numbers=[...state.pending.numbers];
+  assert.throws(()=>change(state,{type:'mark-invalid',number:numbers[0],invalid:true},12000),/공개가 끝난/);
+  assert.throws(()=>change(state,{type:'mark-invalid',number:9999,invalid:true},13000));
+  for(const number of numbers) state=change(state,{type:'mark-invalid',number,invalid:true},13000);
+  state=validateState(JSON.parse(JSON.stringify(state)));
+  assert.equal(state.pending.invalid.length,5);
+  state=change(state,{type:'confirm'},13000);
+  assert.equal(state.pending,null); assert.equal(prizesRemaining(state),75);
+  assert(numbers.every(n=>!candidates(state).includes(n)));
+  assert.equal(nextCount(state),5);
+});
+
+test('page changes apply five/three presets and share a single no-repeat pool and prize total', () => {
+  let state=initialState(); const seen=[];
+  assert.deepEqual(state.programs.slice(0,5).map(p=>[p.batch,p.hosts,p.planned]),[[5,3,15],[5,4,20],[3,3,9],[3,5,15],[3,2,6]]);
+  for(let i=0;i<6;i++) {
+    state=change(state,{type:'program',id:state.programs[i].id});
+    state=change(state,{type:'draw'},10000+i*4000);
+    assert.equal(state.pending.numbers.length,i>=2&&i<=4?3:5);
+    assert.equal(state.pending.programId,state.programs[i].id);
+    seen.push(...state.pending.numbers);
+    assert.throws(()=>change(state,{type:'program',id:'page-1'}),/먼저 확정/);
+    state=change(state,{type:'confirm'},13000+i*4000);
+  }
+  assert.equal(seen.length,new Set(seen).size);
+  assert.equal(winnerNumbers(state,'page-3').length,3);
+  assert.equal(prizesRemaining(state),75-seen.length);
+  const changed=structuredClone(state.programs);changed[2].title='진행자 수정';changed[2].batch=4;changed[2].planned=12;
+  state=change(state,{type:'program-settings',programs:changed,revision:state.revision});
+  assert.equal(state.history[2].programTitle,'뚜뚜빠빠');
+  state=change(state,{type:'program',id:'page-3'});assert.equal(state.batch,4);
+});
+
+test('correcting a confirmed invalid ticket changes counts without returning it to the pool', () => {
+  let state=change(initialState(),{type:'draw'},10000);state=change(state,{type:'confirm'},13000);
+  const round=state.history[0],number=round.numbers[0];
+  assert.throws(()=>change(state,{type:'amend-invalid',id:round.id,number,invalid:true,revision:0}));
+  state=change(state,{type:'amend-invalid',id:round.id,number,invalid:true,revision:state.revision});
+  assert.equal(prizesRemaining(state),71);assert.equal(winnerNumbers(state).length,4);assert(!candidates(state).includes(number));
+  state=change(state,{type:'settings',batch:5,excluded:'',prizeTotal:4});
+  assert.throws(()=>change(state,{type:'amend-invalid',id:round.id,number,invalid:false,revision:state.revision}),/상품 수/);
+});
+
+test('old discarded records stay readable but are excluded from all future draws', () => {
+  const oldRound={id:'old',numbers:[1,2,3,4,5],mode:'ticket',rangeStart:1,rangeEnd:200,startedAt:10000,duration:6800,status:'discarded',resolvedAt:16800};
+  const legacy={version:1,revision:2,mode:'ticket',batch:5,rangeStart:1,rangeEnd:200,excluded:[],sound:false,pending:{...oldRound,id:'pending',numbers:[1,6,7,8,9],status:undefined,startedAt:20000},history:[oldRound],view:'result',shownId:null};
+  let state=validateState(legacy);
+  assert.deepEqual(state.pending.numbers,[1,6,7,8,9]);
+  state=change(state,{type:'confirm'},26800);
+  assert([1,2,3,4,5,6,7,8,9].every(n=>!candidates(state).includes(n)));
+  assert.equal(winnerNumbers(state).length,5);
 });
