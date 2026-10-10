@@ -44,7 +44,7 @@ const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
           </div>
         </div>
         <section id="pending-review" class="pending-review" aria-label="이번 추첨 유효·무효 확인" hidden><div><h3>무효표 표시</h3><p>무효인 번호만 누른 뒤 결과를 확정해 주세요. 나온 번호는 모두 다음 추첨에서 제외됩니다.</p></div><div id="pending-numbers" class="review-numbers"></div><p id="pending-summary" role="status"></p></section>
-        <div class="utility-row"><div class="view-actions" role="group" aria-label="무대 화면 전환"><button id="show-idle" class="text-button" aria-pressed="true">처음 화면</button><button id="show-page" class="text-button" aria-pressed="false">이 페이지 번호</button><button id="show-all" class="text-button" aria-pressed="false">전체 당첨 번호</button><button id="show-end" class="text-button" aria-pressed="false">마침 화면</button></div><div class="connection"><span id="stage-status">이 화면에서 바로 추첨할 수 있습니다</span><span id="offline-status">오프라인 준비 확인 중</span></div></div>
+        <div class="utility-row"><div class="view-actions" role="group" aria-label="무대 화면 전환"><button id="show-idle" class="text-button" aria-pressed="true">진행자 표지</button><button id="show-page" class="text-button" aria-pressed="false">이 페이지 번호</button><button id="show-all" class="text-button" aria-pressed="false">전체 당첨 번호</button><button id="show-end" class="text-button" aria-pressed="false">마침 화면</button></div><div class="connection"><span id="stage-status">이 화면에서 바로 추첨할 수 있습니다</span><span id="offline-status">오프라인 준비 확인 중</span></div></div>
       </section>
       <section class="page-results" aria-label="현재 페이지 당첨 번호"><div><h2>이 페이지 당첨 번호</h2><span id="page-tally"></span></div><div id="page-numbers" class="page-numbers"></div></section>
       <details id="program-settings-panel" class="program-settings-panel"><summary><span>진행표 수정</span><span class="summary-description">진행자 · 추첨 인원 · 예정 수량</span></summary><form id="program-settings"><fieldset id="program-fields"><div id="program-editor"></div><p id="plan-total" class="form-hint"></p><p class="form-hint">예정 수량은 진행 참고용입니다. 페이지는 직접 선택하며, 마지막 추첨 인원은 전체 남은 상품 수에 맞춰 줄어듭니다.</p><button class="button outline" type="submit">진행표 저장</button></fieldset></form></details>
@@ -73,7 +73,7 @@ const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
   </div>
   <dialog id="action-dialog"><form method="dialog"><h2 id="dialog-title"></h2><p id="dialog-message"></p><label id="reset-label" hidden>계속하려면 ‘초기화’를 입력해 주세요.<input id="reset-word" autocomplete="off" /></label><div class="dialog-actions"><button value="cancel" class="button outline" autofocus>취소</button><button id="dialog-accept" value="accept" class="button primary">계속</button></div></form></dialog>
   <dialog id="help-dialog"><div class="help-content"><h2>추첨 진행 안내</h2><ol>
-    <li>진행 페이지를 선택하면 해당 페이지의 추첨 인원(5명 또는 3명)이 적용됩니다. ‘진행표 수정’에서 진행자와 인원·예정 수량을 바꿀 수 있습니다.</li>
+    <li>진행 페이지를 선택하면 진행자 표지가 무대에 표시되고 해당 페이지의 추첨 인원이 적용됩니다. 추첨을 시작하면 진행자 이름이 사라집니다. ‘진행자 표지’로 다시 표지를 띄울 수 있습니다.</li>
     <li>추첨 설정에서 전체 상품 수와 행운권 번호 구간을 입력해 주세요. 미리 제외할 번호도 설정할 수 있습니다.</li>
     <li>추첨 연출은 기본 ‘자동 랜덤’입니다. 10가지를 한 번씩 섞어 보여 주고, 같은 연출은 연달아 나오지 않습니다. 선택 메뉴에서 원하는 연출 하나로 고정할 수도 있습니다.</li>
     <li><kbd>Space</kbd> 또는 ‘추첨 시작’을 누릅니다. 번호가 모두 공개되면 무효인 번호만 누른 뒤 ‘결과 확정’ 또는 <kbd>Enter</kbd>를 누릅니다.</li>

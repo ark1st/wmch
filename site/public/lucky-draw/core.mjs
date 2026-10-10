@@ -3,12 +3,12 @@ export const MODE_INFO = {
   number: {label:'숫자', description:'돌아가는 숫자가 차례로 멈춥니다'},
   ball: {label:'공', description:'번호가 적힌 공을 하나씩 뽑습니다'},
   grid: {label:'격자', description:'번호판에서 당첨 번호를 찾습니다'},
-  drum: {label:'드럼', description:'드럼을 돌려 행운권을 꺼냅니다'},
+  drum: {label:'회전판', description:'큰 회전판 옆으로 당첨 번호가 차례로 쌓입니다'},
   flip: {label:'플립 보드', description:'접이식 번호판이 넘어가며 멈춥니다'},
   envelope: {label:'봉투', description:'봉투를 열어 당첨 번호를 꺼냅니다'},
   spotlight: {label:'스포트라이트', description:'빛이 모이면 번호가 드러납니다'},
-  orbit: {label:'궤도', description:'원을 따라 돌던 번호가 자리를 잡습니다'},
-  curtain: {label:'커튼', description:'커튼이 양옆으로 열리며 번호가 나타납니다'},
+  orbit: {label:'궤도', description:'당첨 번호들이 둥근 궤도 위에 자리를 잡습니다'},
+  curtain: {label:'커튼', description:'무대 전체의 커튼을 열어 당첨 번호를 공개합니다'},
 };
 export const MODES = Object.keys(MODE_INFO);
 export const DURATION = 3000;

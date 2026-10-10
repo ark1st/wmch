@@ -1,5 +1,5 @@
 // Scoped to the event only. Bump VERSION when changing any event asset or page.
-const VERSION = 'wmch-draw-47-v13';
+const VERSION = 'wmch-draw-47-v15';
 let applyRequested = false;
 const ROOT = new URL('./', self.location).pathname;
 const CACHE = `${VERSION}-${ROOT}`;

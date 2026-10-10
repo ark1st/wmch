@@ -117,7 +117,6 @@ kbd { font-family:inherit; font-size:10px; border:1px solid currentColor; border
 .history-valid-count { flex-basis:100%; font-size:11px; color:var(--muted); font-weight:400 }
 .invalid-panel { margin-top:24px; padding-bottom:20px }
 .invalid-panel .form-hint { margin-top:12px }
-.intro-program { font-size:clamp(15px,2.2vw,36px); color:var(--stage-muted); margin-bottom:2.4vh; max-width:40vw; text-wrap:balance }
 .winner-card.is-invalid { opacity:.58; filter:saturate(.1) }
 .winner-card.is-invalid strong { text-decoration:line-through; text-decoration-thickness:2px }
 .winner-card .invalid-label { display:none }
@@ -144,7 +143,6 @@ kbd { font-family:inherit; font-size:10px; border:1px solid currentColor; border
   .pending-review { padding:18px 14px }
   .number-choice { padding:9px 12px; gap:10px }
   .number-choice strong { font-size:20px }
-  .intro-program { font-size:3vw }
 }
 .mode-bar { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:64px; padding:10px 22px }
 .mode-choice { display:flex; align-items:center; gap:14px; flex-shrink:0 }
@@ -237,16 +235,13 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .stage-backdrop:after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,#173f34 29%,#173f34df 43%,#173f3429 75%),linear-gradient(0deg,#173f34a8,transparent 40%,transparent 70%,#173f3466) }
 .stage-frame[data-view=idle] .stage-backdrop,.stage-frame[data-view=end] .stage-backdrop { opacity:1 }
 .stage-frame[data-view=end] .stage-backdrop { opacity:.3 }
-.stage-header { position:absolute; inset:0 5.2vw auto; height:14vh; z-index:2; display:flex; justify-content:space-between; align-items:center }
-.stage-brand { display:flex; align-items:center; gap:1vw; font-size:clamp(10px,1.3vw,26px); font-weight:500; letter-spacing:-.025em }
-.stage-brand img { width:clamp(27px,3.5vw,67px); height:clamp(20px,2.4vw,46px); object-fit:contain; filter:brightness(0) invert(1) }
-.stage-intro { position:absolute; inset:15vh 5.2vw 12vh; display:flex; align-items:center }
-.intro-copy { width:55%; animation:intro-enter .4s var(--ease) both }
-.intro-copy h1 { font-size:min(8.5vw,19vh); line-height:1.17; letter-spacing:-.04em; font-weight:550; color:#f8f8ef }
-.intro-meta { display:flex; align-items:center; gap:3.2vw; margin-top:5vh; color:var(--stage-muted); font-size:clamp(8px,1vw,20px) }
-.intro-meta>span+span { border-left:1px solid #c3d9bb55; padding-left:3.2vw }
-.intro-meta b { display:block; color:var(--stage-ink); margin-top:1.3vh; font-size:clamp(12px,1.8vw,36px); font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.035em }
-.stage-footer { position:absolute; inset:auto 5.2vw 0; height:10vh; display:flex; align-items:center; justify-content:flex-end; font-size:clamp(8px,1vw,20px); color:var(--stage-muted); z-index:2 }
+.stage-intro { position:absolute; inset:12vh 7vw; display:flex; align-items:center }
+.intro-copy { width:68%; animation:intro-enter .4s var(--ease) both }
+.cover-label { color:var(--stage-muted); font-size:min(1.7vw,4vh); margin-bottom:4vh }
+.intro-copy h1 { font-size:min(6.4vw,14vh); line-height:1.25; letter-spacing:-.04em; font-weight:550; color:#f8f8ef; overflow-wrap:anywhere; text-wrap:balance }
+.intro-copy h1 span { display:block }
+.intro-copy h1.long-title { font-size:min(3.6vw,8vh) }
+.cover-count { margin-top:5vh; color:var(--stage-muted); font-size:min(1.7vw,4vh) }
 .draw-scene { position:absolute; inset:0; display:flex; align-items:center; justify-content:center }
 .scene-heading { position:absolute; top:18vh; text-align:center }
 .scene-heading p { color:var(--stage-muted); font-size:clamp(10px,1.2vw,24px); margin-bottom:2vh }
@@ -427,6 +422,111 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
   .history-round { grid-template-columns:53px 1fr auto; gap:8px }
   .summary-description { font-size:11px }
 }
+/* Each presentation has its own spatial composition as well as its reveal motion. */
+.mode-ticket .winner-card.ready { transform:rotate(var(--fan)) }
+.mode-ticket .winner-card.reveal { animation:ticket-deal .45s var(--ease) both }
+.mode-number { background:#112d29 }
+.mode-number .winner-row { top:31vh }
+.mode-number .winner-card { height:44vh; overflow:hidden; border-top:1px solid #7b9b7f55; border-bottom:1px solid #7b9b7f55; border-radius:0 }
+.mode-number .winner-card.sealed strong { animation:reel-drop .12s linear infinite }
+.mode-number .winner-card.sealed { color:#8da994 }
+.mode-number .winner-card.reveal { animation:reel-stop .32s var(--ease) both }
+.mode-ball .winner-row { top:40vh }
+.mode-ball .winner-row:after { content:''; position:absolute; left:0; right:0; bottom:-4vh; height:1px; background:#92ad8455; box-shadow:0 1vh 2vh #071f18 }
+.mode-ball .winner-card.reveal { animation:ball-land .62s both }
+.mode-ball .ball-vessel { width:min(30vw,46vh); height:min(30vw,46vh); border-radius:50%; border:2px solid #b4caaa; background:#345a41 }
+.mode-grid { background:#142e29 }
+.mode-grid .winner-row { top:34vh; left:10vw; right:10vw; flex-wrap:wrap; gap:2vh 1.5vw }
+.mode-grid .winner-card { width:24vw; height:20vh; border:1px solid #b4c990; border-radius:0; color:#eaf0ce; background:#294f3b }
+.mode-grid .winner-card strong { font-size:min(6.6vw,15vh) }
+.mode-grid .winner-card.reveal { animation:tile-focus .35s var(--ease) both }
+.mode-grid .draw-art.vanish { opacity:.06; transform:none }
+.mode-drum { background:#eee9d9; color:#253c32 }
+.mode-drum .scene-heading { top:10vh }
+.mode-drum .scene-heading h1 { color:#253c32 }
+.mode-drum .scene-heading p,.mode-drum .scene-caption { color:#647460 }
+.mode-drum .draw-art { inset:28vh 52vw 12vh 5vw }
+.raffle-wheel { width:min(38vw,58vh); height:min(38vw,58vh); border:1.2vw solid #c1a867; border-radius:50%; background:repeating-conic-gradient(#2b5540 0deg 30deg,#e0d8b5 30deg 60deg); position:relative; box-shadow:0 1.2vh 0 #9c885a,0 2vh 4vh #6d674133; animation:wheel-spin 2.3s cubic-bezier(.12,.6,.15,1) both; animation-delay:var(--phase) }
+.wheel-stub { position:absolute; left:50%; top:50%; margin:-2vh -.6vw; width:1.2vw; height:4vh; border-radius:.15vw; background:#f7f1db; border:1px solid #8e9b7955; transform:rotate(var(--angle)) translateY(min(13vw,20vh)) }
+.wheel-hub { position:absolute; width:7vw; height:7vw; max-width:15vh; max-height:15vh; border:2px solid #c1a867; background:#eee9d9; border-radius:50%; display:grid; place-items:center; color:#3b5343; font-size:1.3vw }
+.wheel-pointer { position:absolute; left:calc(50% - 1vw); top:0; width:2vw; height:5vh; background:#735c30; clip-path:polygon(0 0,100% 0,50% 100%) }
+.mode-drum .winner-row { top:27vh; left:54vw; right:8vw; display:flex; flex-direction:column; gap:1.2vh }
+.mode-drum .winner-card { width:100%; height:10vh; border:0; border-bottom:1px solid #b8bea3; border-radius:0; background:none; box-shadow:none; color:#234433; flex-direction:row; justify-content:space-between; padding:0 1.5vw }
+.mode-drum .winner-card small { position:static; color:#647460; font-size:1.1vw }
+.mode-drum .winner-card strong { font-size:min(5.8vw,9vh); margin:0 }
+.mode-drum .winner-card:before,.mode-drum .winner-card:after,.mode-drum .ticket-bottom { display:none }
+.mode-drum .winner-card.reveal { animation:wheel-result .35s var(--ease) both }
+.mode-drum .winner-card .invalid-label { left:0; bottom:0; width:auto; font-size:1vw }
+.mode-flip { background:#101e1e }
+.mode-flip .winner-row { top:38vh }
+.mode-flip .winner-card { height:28vh; background:none; border:0; box-shadow:none; overflow:visible }
+.mode-flip .winner-card:after,.mode-flip .ticket-bottom { display:none }
+.mode-flip .winner-card small { top:-3vh; color:#a7b9ad }
+.mode-flip .winner-card strong { display:flex; gap:.25vw; margin:0; font-size:7.5vw; letter-spacing:0 }
+.flip-digit { position:relative; display:grid; place-items:center; min-width:4.9vw; height:19vh; background:#243330; border:1px solid #72807066; border-radius:.3vw; color:#f1ddae; box-shadow:0 .6vh 0 #071311 }
+.flip-digit:after { content:''; position:absolute; top:50%; left:0; right:0; height:2px; background:#0b1915; box-shadow:0 1px #9caa9044 }
+.mode-flip .winner-card.sealed strong { animation:none }
+.mode-flip .sealed .flip-digit { animation:flip-roll .16s ease-in infinite; animation-delay:calc(var(--digit)*-35ms) }
+.mode-flip .winner-card.reveal { animation:none }
+.mode-flip .reveal .flip-digit { animation:flip-settle .32s var(--ease) both }
+.wide-numbers .mode-flip .winner-card strong { font-size:5.4vw }
+.wide-numbers .mode-flip .flip-digit { min-width:3.7vw }
+.mode-envelope { background:#354b3e }
+.mode-envelope .winner-row { top:52vh }
+.mode-envelope .winner-card { height:23vh; background:#d3c9a9; border-color:#c6bd9d }
+.envelope-insert { position:absolute; inset:-19vh 1vw 5vh; background:#fcf8ed; border:1px solid #e0d8c0; opacity:0; transform:translateY(13vh); transition:transform .45s var(--ease),opacity .2s; z-index:0 }
+.mode-envelope .winner-card strong { position:relative; z-index:1; font-size:min(7.6vw,16vh); margin:0; transform:translateY(-19vh) }
+.mode-envelope .winner-card small { top:-16vh; z-index:1; opacity:0; transition:opacity .25s }
+.mode-envelope .reveal .envelope-insert { opacity:1; transform:translateY(0) }
+.mode-envelope .reveal small { opacity:1 }
+.mode-envelope .reveal .envelope-front { opacity:1; transform:none }
+.mode-envelope .reveal .envelope-flap { opacity:.5; transform:rotateX(180deg); z-index:-1 }
+.mode-envelope .envelope-front { height:100%; background:#c5b991 }
+.mode-envelope .envelope-flap { height:100%; background:#e3d9b9 }
+.mode-envelope .winner-card.reveal { animation:none }
+.mode-envelope .winner-card .invalid-label { bottom:28%; z-index:3 }
+.wide-numbers .mode-envelope .winner-card strong { font-size:min(6.1vw,14vh) }
+.mode-spotlight { background:#0b141b }
+.mode-spotlight .winner-row { top:36vh }
+.mode-spotlight .winner-card:nth-child(even) { margin-top:16vh }
+.mode-spotlight .winner-card:before { display:block; width:16vw; height:8vh; left:0; bottom:0; border-radius:50%; background:#efdba521; box-shadow:0 0 5vw #efdba514 }
+.mode-spotlight .winner-card strong { font-size:min(8.7vw,20vh); font-weight:450 }
+.mode-spotlight .winner-card.reveal { animation:light-reveal .5s var(--ease) both }
+.mode-spotlight .scene-caption { bottom:7vh }
+.wide-numbers .mode-spotlight .winner-card strong { font-size:min(6.6vw,16vh) }
+.mode-orbit .scene-heading { top:7vh }
+.mode-orbit .scene-heading h1 { font-size:3.2vw }
+.mode-orbit .scene-caption { bottom:6vh }
+.mode-orbit .winner-row { inset:29vh 5vw 12vh; display:block }
+.mode-orbit .winner-card { position:absolute; left:50%; top:50%; width:14vw; height:14vw; max-width:27vh; max-height:27vh; margin-top:calc(min(14vw,27vh)/-2); margin-left:calc(min(14vw,27vh)/-2); background:#204835 }
+.mode-orbit .winner-card.ready { transform:translate(var(--orbit-x),var(--orbit-y)) }
+.mode-orbit .winner-card.reveal { animation:orbit-place .5s var(--ease) both }
+.mode-orbit .winner-card strong { font-size:min(6.6vw,14vh) }
+.mode-orbit .winner-card small { top:3vh; font-size:.8vw }
+.wide-numbers .mode-orbit .winner-card strong { font-size:min(5vw,11vh) }
+.mode-curtain { background:#231e1c }
+.mode-curtain .scene-heading h1 { color:#f3dfae }
+.mode-curtain .scene-heading p,.mode-curtain .scene-caption { color:#c9b894 }
+.mode-curtain .winner-row { top:37vh }
+.mode-curtain .winner-card { height:31vh; background:none; border-bottom:1px solid #bd9c53; color:#f3dfae }
+.mode-curtain .winner-card small { color:#c9b894 }
+.mode-curtain .winner-card.sealed strong { opacity:0 }
+.mode-curtain .winner-card.reveal strong { animation:light-reveal .35s var(--ease) both }
+.mode-curtain .draw-art { inset:0; z-index:2; overflow:hidden; pointer-events:none }
+.theatre-curtain { position:absolute; inset:0 auto 0 0; width:51%; background:repeating-linear-gradient(90deg,#4b242a 0,#743a3c 4%,#422127 8%,#613035 12%); border-bottom:1vh solid #b89b5c; box-shadow:1vw 0 3vw #0006; transition:transform .7s cubic-bezier(.65,0,.2,1) }
+.theatre-curtain.right { left:auto; right:0; transform:scaleX(-1) }
+.curtain-open .theatre-curtain.left { transform:translateX(-95%) }
+.curtain-open .theatre-curtain.right { transform:translateX(95%) scaleX(-1) }
+.theatre-valance { position:absolute; inset:0 0 auto; height:8vh; background:repeating-linear-gradient(90deg,#4b242a 0,#743a3c 2%,#422127 5%,#613035 8%); border-bottom:.5vh solid #b89b5c; box-shadow:0 1vh 2vh #0004 }
+@keyframes ticket-deal { from { opacity:0; transform:translateY(20vh) rotate(-25deg) } to { opacity:1; transform:rotate(var(--fan)) } }
+@keyframes reel-drop { from { transform:translateY(-7vh); filter:blur(.1vw) } to { transform:translateY(7vh); filter:blur(.1vw) } }
+@keyframes reel-stop { from { transform:translateY(-3vh) } to { transform:translateY(0) } }
+@keyframes ball-land { 0% { transform:translateY(-28vh) scale(.9); opacity:0 } 45% { transform:translateY(0) scale(1.08,.92); opacity:1 } 70% { transform:translateY(-6vh) scale(.98,1.02) } 100% { transform:translateY(0) scale(1) } }
+@keyframes tile-focus { from { transform:scale(.7); opacity:0 } to { transform:scale(1); opacity:1 } }
+@keyframes wheel-spin { from { transform:rotate(-540deg) } to { transform:rotate(15deg) } }
+@keyframes wheel-result { from { transform:translateX(-5vw); opacity:0 } to { transform:translateX(0); opacity:1 } }
+@keyframes orbit-place { from { transform:translate(0,0) scale(.2); opacity:0 } to { transform:translate(var(--orbit-x),var(--orbit-y)) scale(1); opacity:1 } }
+.is-reduced .winner-card,.is-reduced .winner-card * { animation:none!important; transition:none!important }
 @media (prefers-reduced-motion:reduce) {
   *,*:before,*:after { animation:none!important; transition:none!important; scroll-behavior:auto!important }
 }
