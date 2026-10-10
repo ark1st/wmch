@@ -243,15 +243,15 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .intro-copy h1.long-title { font-size:min(3.6vw,8vh) }
 .cover-count { margin-top:5vh; color:var(--stage-muted); font-size:min(1.7vw,4vh) }
 .draw-scene { position:absolute; inset:0; display:flex; align-items:center; justify-content:center }
-.scene-heading { position:absolute; top:18vh; text-align:center }
-.scene-heading p { color:var(--stage-muted); font-size:clamp(10px,1.2vw,24px); margin-bottom:2vh }
-.scene-heading h1 { color:var(--stage-ink); font-size:min(3.8vw,9vh); font-weight:550; letter-spacing:-.03em }
+.scene-heading { position:absolute; top:9vh; text-align:center }
+.scene-heading p { color:var(--stage-muted); font-size:clamp(10px,1.2vw,24px); margin-bottom:2.4vh }
+.scene-heading h1 { color:var(--stage-ink); font-size:min(3.6vw,8vh); font-weight:550; letter-spacing:.045em; line-height:1.35 }
 .scene-caption { position:absolute; bottom:13vh; font-size:clamp(10px,1.4vw,28px); color:var(--stage-muted) }
 .winner-row { position:absolute; left:4.8vw; right:4.8vw; top:37vh; display:flex; justify-content:center; align-items:center; gap:1.25vw; z-index:1; perspective:1000px }
-.winner-card { position:relative; width:17.1vw; height:35vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#214d38; background:#f5f7ed; border-radius:.4vw; opacity:0; transform:translateY(2vh); transition:opacity .18s,transform .3s var(--ease); box-shadow:0 .7vh 1.8vh #0a241920; transform-origin:50% 90% }
+.winner-card { position:relative; width:17.1vw; height:35vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#102c20; background:#f5f7ed; border-radius:.4vw; opacity:0; transform:translateY(2vh); transition:opacity .18s,transform .3s var(--ease); box-shadow:0 .7vh 1.8vh #0a241920; transform-origin:50% 90% }
 .winner-card.ready { opacity:1; transform:translateY(0) rotateX(0) }
 .winner-card small { position:absolute; top:3.3vh; font-size:clamp(7px,.9vw,18px); color:#5c7055 }
-.winner-card strong { font-family:var(--font); font-size:min(9.3vw,21vh); font-variant-numeric:tabular-nums; font-weight:550; letter-spacing:-.035em; line-height:1; margin-top:-1.5vh }
+.winner-card strong { font-family:var(--font); font-size:min(8.1vw,19vh); font-variant-numeric:lining-nums tabular-nums; font-weight:750; letter-spacing:.015em; line-height:1; margin-top:-1.5vh }
 .ticket-bottom { position:absolute; bottom:0; left:0; right:0; height:7vh; display:flex; align-items:center; justify-content:center; border-top:1px dashed #b9c7af; color:#61745a; font-size:clamp(6px,.75vw,15px) }
 .winner-card:before,.winner-card:after { content:''; position:absolute; width:1.1vw; height:1.1vw; border-radius:50%; background:var(--stage); bottom:calc(7vh - .55vw); z-index:1 }
 .winner-card:before { left:-.55vw }
@@ -259,8 +259,8 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .winner-card.sealed { color:#eaf1df; background:#315b46; box-shadow:none }
 .winner-card.sealed small,.winner-card.sealed .ticket-bottom { color:#c8d6bf; border-color:#78936b }
 .winner-card.reveal { animation:number-reveal .3s var(--ease) both }
-.mode-number .winner-card,.mode-grid .winner-card { color:#f3f7e9; background:none; box-shadow:none; border:0 }
-.mode-number .winner-card strong,.mode-grid .winner-card strong { font-size:min(10vw,24vh); margin:0 }
+.mode-number .winner-card,.mode-grid .winner-card { color:#fff; background:none; box-shadow:none; border:0 }
+.mode-number .winner-card strong,.mode-grid .winner-card strong { font-size:min(8.1vw,19vh); margin:0 }
 .mode-number .winner-card small,.mode-number .ticket-bottom,.mode-grid .winner-card small,.mode-grid .ticket-bottom,.mode-number .winner-card:before,.mode-number .winner-card:after,.mode-grid .winner-card:before,.mode-grid .winner-card:after { display:none }
 .mode-ball .winner-card { width:16.7vw; height:16.7vw; max-width:35vh; max-height:35vh; border-radius:50%; background:radial-gradient(circle at 35% 25%,#fff 0,#eff4e7 52%,#c0d1b5 100%); box-shadow:inset -.8vw -1vh 2vw #50744118,0 1.5vh 2vh #0d291e35 }
 .mode-ball .winner-card strong { font-size:min(7.9vw,17vh); margin:0 }
@@ -291,7 +291,7 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .mode-flip .winner-card.sealed strong { animation:flip-roll .18s ease-in infinite; animation-delay:var(--phase) }
 .mode-flip .winner-card.reveal { animation:flip-settle .38s var(--ease) both }
 /* Paper envelopes open along their top fold; the number stays on the insert. */
-.mode-envelope .winner-card { border:1px solid #d1cfb5; background:#f6f3e6; color:#214d38; border-radius:.15vw; box-shadow:0 1vh 2vh #071e1925 }
+.mode-envelope .winner-card { border:1px solid #d1cfb5; background:#f6f3e6; color:#102c20; border-radius:.15vw; box-shadow:0 1vh 2vh #071e1925 }
 .mode-envelope .winner-card:before,.mode-envelope .winner-card:after,.mode-envelope .ticket-bottom { display:none }
 .mode-envelope .winner-card small { color:#647158 }
 .mode-envelope .winner-card.sealed strong { opacity:0; transform:translateY(5vh) }
@@ -305,7 +305,7 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 /* Moving light is kept behind the numbers, with no strobing or flashing. */
 .mode-spotlight .draw-art { inset:20vh 0 15vh; overflow:hidden }
 .spotlight-beam { position:absolute; top:-20vh; left:calc(12% + var(--i)*24%); width:28vw; height:90vh; background:linear-gradient(180deg,#f8edc722,#f8edc700); clip-path:polygon(48% 0,52% 0,100% 100%,0 100%); transform-origin:50% 0; animation:light-sweep 2.5s ease-in-out both; animation-delay:var(--phase) }
-.mode-spotlight .winner-card { background:none; box-shadow:none; color:#faf2d9 }
+.mode-spotlight .winner-card { background:none; box-shadow:none; color:#fff }
 .mode-spotlight .winner-card:before,.mode-spotlight .winner-card:after,.mode-spotlight .ticket-bottom,.mode-spotlight .winner-card small { display:none }
 .mode-spotlight .winner-card strong { margin:0 }
 .mode-spotlight .winner-card.sealed strong { opacity:0 }
@@ -341,13 +341,13 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .all-scene { position:absolute; inset:17vh 5vw 13vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4vh }
 .all-scene h1 { font-size:3.3vw; font-weight:550; letter-spacing:-.035em }
 .all-numbers { width:85vw; display:grid; grid-template-columns:repeat(10,1fr); gap:2.5vh 1vw; text-align:center }
-.all-numbers span { font:500 3.6vw var(--font); color:#edf4df; font-variant-numeric:tabular-nums }
+.all-numbers span { font:700 3.6vw var(--font); color:#fff; font-variant-numeric:lining-nums tabular-nums; letter-spacing:.015em }
 #all-page { font-size:clamp(10px,1.2vw,24px); color:var(--stage-muted) }
 .end-scene { position:absolute; inset:18vh 5vw; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4vh; animation:intro-enter .7s var(--ease) both }
 .end-scene p,.end-scene>span { font-size:clamp(11px,1.5vw,30px); color:var(--stage-muted) }
 .end-scene h1 { font-size:8vw; font-weight:500; letter-spacing:-.04em; margin:2vh 0 }
 .stage-error { position:absolute; inset:35% 10%; font-size:3vw; text-align:center; background:var(--stage); color:var(--stage-ink); z-index:3 }
-.wide-numbers .winner-card strong { font-size:min(6.9vw,17vh) }
+.wide-numbers .winner-card strong { font-size:min(6vw,15vh) }
 .wide-numbers .mode-ball .winner-card strong,.wide-numbers .mode-orbit .winner-card strong { font-size:min(5.8vw,14vh) }
 .wide-numbers .all-numbers span { font-size:3.1vw }
 .is-reduced .winner-card { transition:none; animation:none }
@@ -425,6 +425,7 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 /* Each presentation has its own spatial composition as well as its reveal motion. */
 .mode-ticket .winner-card.ready { transform:rotate(var(--fan)) }
 .mode-ticket .winner-card.reveal { animation:ticket-deal .45s var(--ease) both }
+.mode-ticket.is-finished .winner-card { animation:none; transform:none }
 .mode-number { background:#112d29 }
 .mode-number .winner-row { top:31vh }
 .mode-number .winner-card { height:44vh; overflow:hidden; border-top:1px solid #7b9b7f55; border-bottom:1px solid #7b9b7f55; border-radius:0 }
@@ -437,12 +438,12 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .mode-ball .ball-vessel { width:min(30vw,46vh); height:min(30vw,46vh); border-radius:50%; border:2px solid #b4caaa; background:#345a41 }
 .mode-grid { background:#142e29 }
 .mode-grid .winner-row { top:34vh; left:10vw; right:10vw; flex-wrap:wrap; gap:2vh 1.5vw }
-.mode-grid .winner-card { width:24vw; height:20vh; border:1px solid #b4c990; border-radius:0; color:#eaf0ce; background:#294f3b }
+.mode-grid .winner-card { width:24vw; height:20vh; border:1px solid #b4c990; border-radius:0; color:#fff; background:#294f3b }
 .mode-grid .winner-card strong { font-size:min(6.6vw,15vh) }
 .mode-grid .winner-card.reveal { animation:tile-focus .35s var(--ease) both }
 .mode-grid .draw-art.vanish { opacity:.06; transform:none }
 .mode-drum { background:#eee9d9; color:#253c32 }
-.mode-drum .scene-heading { top:10vh }
+.mode-drum .scene-heading { top:9vh }
 .mode-drum .scene-heading h1 { color:#253c32 }
 .mode-drum .scene-heading p,.mode-drum .scene-caption { color:#647460 }
 .mode-drum .draw-art { inset:28vh 52vw 12vh 5vw }
@@ -450,10 +451,11 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .wheel-stub { position:absolute; left:50%; top:50%; margin:-2vh -.6vw; width:1.2vw; height:4vh; border-radius:.15vw; background:#f7f1db; border:1px solid #8e9b7955; transform:rotate(var(--angle)) translateY(min(13vw,20vh)) }
 .wheel-hub { position:absolute; width:7vw; height:7vw; max-width:15vh; max-height:15vh; border:2px solid #c1a867; background:#eee9d9; border-radius:50%; display:grid; place-items:center; color:#3b5343; font-size:1.3vw }
 .wheel-pointer { position:absolute; left:calc(50% - 1vw); top:0; width:2vw; height:5vh; background:#735c30; clip-path:polygon(0 0,100% 0,50% 100%) }
-.mode-drum .winner-row { top:27vh; left:54vw; right:8vw; display:flex; flex-direction:column; gap:1.2vh }
-.mode-drum .winner-card { width:100%; height:10vh; border:0; border-bottom:1px solid #b8bea3; border-radius:0; background:none; box-shadow:none; color:#234433; flex-direction:row; justify-content:space-between; padding:0 1.5vw }
+.mode-drum .winner-row { top:31vh; left:54vw; right:8vw; display:flex; flex-direction:column; gap:1.2vh }
+.mode-drum .scene-caption { bottom:6vh }
+.mode-drum .winner-card { width:100%; height:10vh; border:0; border-bottom:1px solid #b8bea3; border-radius:0; background:none; box-shadow:none; color:#102c20; flex-direction:row; justify-content:space-between; padding:0 1.5vw }
 .mode-drum .winner-card small { position:static; color:#647460; font-size:1.1vw }
-.mode-drum .winner-card strong { font-size:min(5.8vw,9vh); margin:0 }
+.mode-drum .winner-card strong { font-size:min(6.4vw,9.4vh); margin:0 }
 .mode-drum .winner-card:before,.mode-drum .winner-card:after,.mode-drum .ticket-bottom { display:none }
 .mode-drum .winner-card.reveal { animation:wheel-result .35s var(--ease) both }
 .mode-drum .winner-card .invalid-label { left:0; bottom:0; width:auto; font-size:1vw }
@@ -463,8 +465,9 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .mode-flip .winner-card:after,.mode-flip .ticket-bottom { display:none }
 .mode-flip .winner-card small { top:-3vh; color:#a7b9ad }
 .mode-flip .winner-card strong { display:flex; gap:.25vw; margin:0; font-size:7.5vw; letter-spacing:0 }
-.flip-digit { position:relative; display:grid; place-items:center; min-width:4.9vw; height:19vh; background:#243330; border:1px solid #72807066; border-radius:.3vw; color:#f1ddae; box-shadow:0 .6vh 0 #071311 }
-.flip-digit:after { content:''; position:absolute; top:50%; left:0; right:0; height:2px; background:#0b1915; box-shadow:0 1px #9caa9044 }
+.flip-digit { position:relative; display:grid; place-items:center; min-width:4.9vw; height:19vh; background:#243330; border:1px solid #72807066; border-radius:.3vw; color:#fff; box-shadow:0 .6vh 0 #071311 }
+.flip-digit:after { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:#0b191555 }
+.is-finished .flip-digit:after { display:none }
 .mode-flip .winner-card.sealed strong { animation:none }
 .mode-flip .sealed .flip-digit { animation:flip-roll .16s ease-in infinite; animation-delay:calc(var(--digit)*-35ms) }
 .mode-flip .winner-card.reveal { animation:none }
@@ -475,7 +478,7 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .mode-envelope .winner-row { top:52vh }
 .mode-envelope .winner-card { height:23vh; background:#d3c9a9; border-color:#c6bd9d }
 .envelope-insert { position:absolute; inset:-19vh 1vw 5vh; background:#fcf8ed; border:1px solid #e0d8c0; opacity:0; transform:translateY(13vh); transition:transform .45s var(--ease),opacity .2s; z-index:0 }
-.mode-envelope .winner-card strong { position:relative; z-index:1; font-size:min(7.6vw,16vh); margin:0; transform:translateY(-19vh) }
+.mode-envelope .winner-card strong { position:relative; z-index:1; font-size:min(7.2vw,16vh); margin:0; transform:translateY(-19vh) }
 .mode-envelope .winner-card small { top:-16vh; z-index:1; opacity:0; transition:opacity .25s }
 .mode-envelope .reveal .envelope-insert { opacity:1; transform:translateY(0) }
 .mode-envelope .reveal small { opacity:1 }
@@ -485,20 +488,20 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .mode-envelope .envelope-flap { height:100%; background:#e3d9b9 }
 .mode-envelope .winner-card.reveal { animation:none }
 .mode-envelope .winner-card .invalid-label { bottom:28%; z-index:3 }
-.wide-numbers .mode-envelope .winner-card strong { font-size:min(6.1vw,14vh) }
+.wide-numbers .mode-envelope .winner-card strong { font-size:min(5.4vw,14vh) }
 .mode-spotlight { background:#0b141b }
 .mode-spotlight .winner-row { top:36vh }
 .mode-spotlight .winner-card:nth-child(even) { margin-top:16vh }
 .mode-spotlight .winner-card:before { display:block; width:16vw; height:8vh; left:0; bottom:0; border-radius:50%; background:#efdba521; box-shadow:0 0 5vw #efdba514 }
-.mode-spotlight .winner-card strong { font-size:min(8.7vw,20vh); font-weight:450 }
+.mode-spotlight .winner-card strong { font-size:min(8.1vw,19vh) }
 .mode-spotlight .winner-card.reveal { animation:light-reveal .5s var(--ease) both }
 .mode-spotlight .scene-caption { bottom:7vh }
-.wide-numbers .mode-spotlight .winner-card strong { font-size:min(6.6vw,16vh) }
+.wide-numbers .mode-spotlight .winner-card strong { font-size:min(6vw,15vh) }
 .mode-orbit .scene-heading { top:7vh }
 .mode-orbit .scene-heading h1 { font-size:3.2vw }
 .mode-orbit .scene-caption { bottom:6vh }
 .mode-orbit .winner-row { inset:29vh 5vw 12vh; display:block }
-.mode-orbit .winner-card { position:absolute; left:50%; top:50%; width:14vw; height:14vw; max-width:27vh; max-height:27vh; margin-top:calc(min(14vw,27vh)/-2); margin-left:calc(min(14vw,27vh)/-2); background:#204835 }
+.mode-orbit .winner-card { position:absolute; left:50%; top:50%; width:15.2vw; height:15.2vw; max-width:27vh; max-height:27vh; margin-top:calc(min(15.2vw,27vh)/-2); margin-left:calc(min(15.2vw,27vh)/-2); background:#204835; color:#fff }
 .mode-orbit .winner-card.ready { transform:translate(var(--orbit-x),var(--orbit-y)) }
 .mode-orbit .winner-card.reveal { animation:orbit-place .5s var(--ease) both }
 .mode-orbit .winner-card strong { font-size:min(6.6vw,14vh) }
@@ -508,7 +511,7 @@ dialog input { display:block; width:100%; border:1px solid var(--line); border-r
 .mode-curtain .scene-heading h1 { color:#f3dfae }
 .mode-curtain .scene-heading p,.mode-curtain .scene-caption { color:#c9b894 }
 .mode-curtain .winner-row { top:37vh }
-.mode-curtain .winner-card { height:31vh; background:none; border-bottom:1px solid #bd9c53; color:#f3dfae }
+.mode-curtain .winner-card { height:31vh; background:none; border-bottom:1px solid #bd9c53; color:#fff }
 .mode-curtain .winner-card small { color:#c9b894 }
 .mode-curtain .winner-card.sealed strong { opacity:0 }
 .mode-curtain .winner-card.reveal strong { animation:light-reveal .35s var(--ease) both }
