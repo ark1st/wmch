@@ -4,22 +4,22 @@ import { webcrypto } from 'node:crypto';
 import { initialState, transition, validateState, candidates, parseExcluded, sample, randomBelow, MODES, DURATION, drawTiming, winnerNumbers, invalidNumbers, prizesRemaining, nextCount } from '../public/lucky-draw/core.mjs';
 const change = (state, action, time = 10000) => transition(state, action, time, webcrypto);
 
-test('all 200 tickets can win once, with no duplicates across 40 rounds', () => {
-  let state = {...initialState(),prizeTotal:200}; const drawn = [];
-  for (let round = 0; round < 40; round++) {
+test('all 250 default tickets can win once, with no duplicates across 50 rounds', () => {
+  let state = {...initialState(),prizeTotal:250}; const drawn = [];
+  for (let round = 0; round < 50; round++) {
     const time = 10000 + round * 10000;
     state = change(state, {type:'draw'}, time);
     assert.equal(state.pending.numbers.length, 5);
     drawn.push(...state.pending.numbers);
     state = change(state, {type:'confirm'}, time + DURATION);
   }
-  assert.equal(new Set(drawn).size, 200);
+  assert.deepEqual([...drawn].sort((a,b)=>a-b),Array.from({length:250},(_,i)=>i+1));
   assert.equal(candidates(state).length, 0);
   assert.throws(() => change(state,{type:'draw'},500000), /소진/);
 });
 
 test('excluded tickets never appear; the last round uses remaining tickets', () => {
-  let state = change(initialState(), {type:'settings', excluded:'1-193, 200', batch:5});
+  let state = change(initialState(), {type:'settings', rangeEnd:200, excluded:'1-193, 200', batch:5});
   state = change(state,{type:'draw'}, 10000);
   assert.equal(state.pending.numbers.length, 5);
   assert(state.pending.numbers.every(n => n >= 194 && n <= 199));
@@ -35,7 +35,7 @@ test('all modes use the same sampler and pending tickets stay eligible until con
     let state = change(initialState(), {type:'mode',mode});
     state = change(state,{type:'draw'});
     assert.equal(state.pending.mode,mode);
-    assert.equal(candidates(state).length,200);
+    assert.equal(candidates(state).length,250);
     assert.throws(() => change(state,{type:'draw'}), /먼저 확정/);
     assert.throws(() => change(state,{type:'settings',excluded:'10',batch:2}), /먼저 확정/);
     assert.throws(() => change(state,{type:'confirm'}), /공개가 끝난/);
@@ -53,7 +53,7 @@ test('invalid tickets do not consume prizes and can never be drawn again', () =>
   assert.equal(state.history[0].status,'confirmed');
   assert.equal(winnerNumbers(state).length,4);
   assert.equal(prizesRemaining(state),71);
-  assert.equal(candidates(state).length,195);
+  assert.equal(candidates(state).length,245);
   state = change(state,{type:'draw'},17000);
   assert.equal(state.pending.numbers.length,5);
   assert(state.pending.numbers.every(n=>!first.numbers.includes(n)));
@@ -61,7 +61,7 @@ test('invalid tickets do not consume prizes and can never be drawn again', () =>
   assert.throws(() => change(state,{type:'confirm',pendingId:first.id},24000),/변경/);
   state = change(state,{type:'confirm'},24000);
   assert.equal(winnerNumbers(state).length,9);
-  assert.equal(candidates(state).length,190);
+  assert.equal(candidates(state).length,240);
 });
 
 test('persisted pending results resume unchanged; confirm is idempotently guarded', () => {
@@ -76,7 +76,7 @@ test('persisted pending results resume unchanged; confirm is idempotently guarde
 
 test('exclusion parser validates whole input and deduplicates ranges', () => {
   assert.deepEqual(parseExcluded('001, 13 15-17, 16'),[1,13,15,16,17]);
-  for (const value of ['0','201','-1','2.5','17-15','1-1000','1;2','word']) assert.throws(() => parseExcluded(value));
+  for (const value of ['0','251','-1','2.5','17-15','1-1000','1;2','word']) assert.throws(() => parseExcluded(value));
 });
 
 test('unbiased RNG rejects out-of-range uint32 and sampler does not modify pool', () => {
@@ -89,7 +89,7 @@ test('unbiased RNG rejects out-of-range uint32 and sampler does not modify pool'
 
 test('damaged records fail closed instead of silently allowing repeat winners', () => {
   assert.throws(() => validateState({...initialState(),version:3}));
-  assert.throws(() => validateState({...initialState(),excluded:[201]}));
+  assert.throws(() => validateState({...initialState(),excluded:[251]}));
   let state=change(initialState(),{type:'draw'},10000);
   state=change(state,{type:'confirm'},17000);
   const duplicate={...state.history[0],id:webcrypto.randomUUID()};
@@ -175,7 +175,7 @@ test('older 6.8-second rounds remain readable and keep their confirmation deadli
   assert.throws(() => change(saved,{type:'confirm'},16799),/공개가 끝난/);
   const confirmed = change(saved,{type:'confirm'},16800);
   assert.equal(validateState(confirmed).history[0].duration,6800);
-  assert.equal(candidates(confirmed).length,195);
+  assert.equal(candidates(confirmed).length,245);
   const next = change(confirmed,{type:'draw'},17000);
   assert.equal(next.pending.duration,3000);
   assert.equal(drawTiming(6800).revealStart,4200);
@@ -198,7 +198,7 @@ test('every mode exhausts a custom four-digit range without exclusions or duplic
 });
 
 test('changing ranges preserves past winners and exclusions remain range-bound', () => {
-  let state = change(initialState(),{type:'draw'},10000);
+  let state = change({...initialState(),rangeEnd:200},{type:'draw'},10000);
   state = change(state,{type:'confirm'},13000);
   const winners = [...state.history[0].numbers];
   state = change(state,{type:'settings',rangeStart:9999,rangeEnd:9999,batch:5,excluded:''});
@@ -218,7 +218,7 @@ test('changing ranges preserves past winners and exclusions remain range-bound',
 });
 
 test('records without range fields migrate to 1-200 without losing the pending draw', () => {
-  const legacy = change(initialState(),{type:'draw'},10000);
+  const legacy = change({...initialState(),rangeEnd:200},{type:'draw'},10000);
   legacy.version = 1;
   delete legacy.rangeStart; delete legacy.rangeEnd;
   delete legacy.pending.rangeStart; delete legacy.pending.rangeEnd;

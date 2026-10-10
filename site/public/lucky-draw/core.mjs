@@ -28,7 +28,7 @@ export const defaultPrograms = () => [
   {id:'page-5',title:'귀빈, 대청부회장',batch:3,hosts:2,planned:6},
   {id:'other',title:'기타 사회자',batch:5,hosts:0,planned:10},
 ];
-export const initialState = () => ({ version: 2, revision: 0, mode: 'random', modeRotation:[], batch: 5, rangeStart:1, rangeEnd:200, prizeTotal:75, programs:defaultPrograms(), programId:'page-1', excluded: [], sound: false, pending: null, history: [], view: 'idle', shownId: null });
+export const initialState = () => ({ version: 2, revision: 0, mode: 'random', modeRotation:[], batch: 5, rangeStart:1, rangeEnd:250, prizeTotal:75, programs:defaultPrograms(), programId:'page-1', excluded: [], sound: false, pending: null, history: [], view: 'idle', shownId: null });
 export const validWinners = round => round.status === 'confirmed' ? round.numbers.filter(n => !(round.invalid ?? []).includes(n)) : [];
 export const winnerNumbers = (state, programId) => state.history.filter(r => programId === undefined || r.programId === programId).flatMap(validWinners);
 export const invalidNumbers = state => state.history.flatMap(r => r.invalid ?? []);
@@ -63,7 +63,7 @@ export function candidates(state) {
   return Array.from({ length:end - start + 1 }, (_, i) => i + start).filter(n => !removed.has(n));
 }
 
-export function parseExcluded(text, rangeStart = 1, rangeEnd = 200) {
+export function parseExcluded(text, rangeStart = 1, rangeEnd = 250) {
   if (!validRange(rangeStart,rangeEnd)) throw new Error('행운권 구간은 1부터 9999 사이의 시작 번호와 끝 번호를 오름차순으로 입력해 주세요.');
   if (!text.trim()) return [];
   const numbers = new Set();

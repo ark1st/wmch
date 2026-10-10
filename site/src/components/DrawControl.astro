@@ -21,7 +21,7 @@ const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
     <main>
       <div class="control-heading">
         <h1>행운권 추첨</h1>
-        <p class="pool-summary">남은 번호 <strong id="remaining">200</strong><span>/ <span id="range-total">200</span></span><i></i><span class="confirmed-summary">당첨 <b id="winner-count">0</b>개</span><span class="excluded-summary">· 제외 <b id="excluded-count">0</b>개</span></p>
+        <p class="pool-summary">남은 번호 <strong id="remaining">250</strong><span>/ <span id="range-total">250</span></span><i></i><span class="confirmed-summary">당첨 <b id="winner-count">0</b>개</span><span class="excluded-summary">· 제외 <b id="excluded-count">0</b>개</span></p>
       </div>
       <p id="notice" class="notice" role="status" hidden></p>
       <section class="program-section" aria-label="행사 진행 페이지">
@@ -53,7 +53,7 @@ const root = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}lucky-draw/`;
           <summary><span>추첨 설정</span><span class="summary-description">전체 상품 · 번호 구간 · 인원</span></summary>
           <form id="settings"><fieldset id="settings-fields">
             <label class="setting-row" for="prize-total-input">전체 상품 수<input id="prize-total-input" type="number" min="1" max="9999" step="1" value="75" required /></label>
-            <div class="range-setting"><p>행운권 번호 구간</p><div class="range-inputs"><label for="range-start">시작 번호<input id="range-start" name="rangeStart" type="number" min="1" max="9999" step="1" value="1" inputmode="numeric" required aria-describedby="range-hint" /></label><span aria-hidden="true">~</span><label for="range-end">끝 번호<input id="range-end" name="rangeEnd" type="number" min="1" max="9999" step="1" value="200" inputmode="numeric" required aria-describedby="range-hint" /></label></div><p id="range-hint">1부터 9999까지 설정할 수 있습니다. 이전 당첨 번호는 계속 제외됩니다.</p></div>
+            <div class="range-setting"><p>행운권 번호 구간</p><div class="range-inputs"><label for="range-start">시작 번호<input id="range-start" name="rangeStart" type="number" min="1" max="9999" step="1" value="1" inputmode="numeric" required aria-describedby="range-hint" /></label><span aria-hidden="true">~</span><label for="range-end">끝 번호<input id="range-end" name="rangeEnd" type="number" min="1" max="9999" step="1" value="250" inputmode="numeric" required aria-describedby="range-hint" /></label></div><p id="range-hint">1부터 9999까지 설정할 수 있습니다. 이전 당첨 번호는 계속 제외됩니다.</p></div>
             <label class="setting-row" for="batch">한 번에 추첨할 인원<select id="batch" name="batch">{[1,2,3,4,5].map(n => <option value={n} selected={n === 5}>{n}명</option>)}</select></label>
             <label class="exclude-label" for="excluded">미리 제외할 번호</label>
             <textarea id="excluded" name="excluded" rows="2" placeholder="예: 13, 57, 88, 100-110" aria-describedby="exclude-hint"></textarea>
