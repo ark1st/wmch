@@ -1,11 +1,20 @@
 // Scoped to the event only. Bump VERSION when changing any event asset or page.
-const VERSION = 'wmch-draw-47-v12';
+const VERSION = 'wmch-draw-47-v13';
 let applyRequested = false;
 const ROOT = new URL('./', self.location).pathname;
 const CACHE = `${VERSION}-${ROOT}`;
 const FILES = ['', 'control/', 'stage/', 'update/', 'app.css', 'core.mjs', 'store.mjs', 'stage.mjs', 'control.mjs', 'audio.mjs', 'logo.png', 'church-exterior.jpg', 'fonts/SUIT-Variable.woff2'].map(path => ROOT + path);
+async function cacheFiles(cache) {
+  // A new worker must not fill its cache with the browser's previous release.
+  const responses = await Promise.all(FILES.map(async path => {
+    const response = await fetch(`${path}?release=${VERSION}`,{cache:'reload'});
+    if (!response.ok) throw new Error('오프라인 파일을 받지 못했습니다.');
+    return response;
+  }));
+  await Promise.all(FILES.map((path,i) => cache.put(path,responses[i])));
+}
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
+  event.waitUntil(caches.open(CACHE).then(cacheFiles));
   // Keep an active event on its installed version until all its windows close.
 });
 self.addEventListener('activate', event => {
@@ -39,7 +48,7 @@ self.addEventListener('message', event => {
     const cache = await caches.open(CACHE);
     let available = await Promise.all(FILES.map(path => cache.match(path)));
     if (available.some(value => !value)) {
-      try { await cache.addAll(FILES); } catch { /* Keep a truthful not-ready status offline. */ }
+      try { await cacheFiles(cache); } catch { /* Keep a truthful not-ready status offline. */ }
       available = await Promise.all(FILES.map(path => cache.match(path)));
     }
     event.ports[0]?.postMessage({ready:available.every(Boolean)});
